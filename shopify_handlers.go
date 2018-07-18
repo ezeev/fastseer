@@ -183,7 +183,7 @@ func (s *Server) handleBuildIndex() http.HandlerFunc {
 			}
 			defer resp.Body.Close()
 
-			log.Println("made it here")
+			log.Println("made it here test")
 			//shopify.CrawlProducts(&shopClient, 3, "", s.Search)
 
 		}
