@@ -7,13 +7,16 @@ import (
 )
 
 type Config struct {
-	ServerPort          int               `yaml:"serverPort"`
-	ShopifyApiKey       string            `yaml:"shopifyApiKey"`
-	ShopifyApiSecret    string            `yaml:"shopifyApiSecret"`
-	DbOptions           map[string]string `yaml:"dbOptions"`
-	DbImpl              string            `yaml:"dbImpl"`
-	DefaultIndexAddress string            `yaml:"defaultIndexAddress"`
-	SearchImpl          string            `yaml:"searchImpl"`
+	ServerPort                  int               `yaml:"serverPort"`
+	ShopifyApiKey               string            `yaml:"shopifyApiKey"`
+	ShopifyApiSecret            string            `yaml:"shopifyApiSecret"`
+	DbOptions                   map[string]string `yaml:"dbOptions"`
+	DbImpl                      string            `yaml:"dbImpl"`
+	DefaultIndexAddress         string            `yaml:"defaultIndexAddress"`
+	IndexingWorkerServices      []string          `yaml:"indexingWorkerServices"`
+	IndexingWorkerEndpoint      string            `yaml:"indexingWorkerEndpoint"`
+	IndexingWorkerStatsEndpoint string            `yaml:"indexingWorkerStatsEndpoint"`
+	SearchImpl                  string            `yaml:"searchImpl"`
 }
 
 func LoadConfigFromFile(path string) *Config {

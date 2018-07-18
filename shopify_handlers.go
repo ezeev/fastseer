@@ -1,9 +1,7 @@
 package fastseer
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/hex"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -12,15 +10,10 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/ezeev/fastseer/shopify"
 )
-
-func verifyRequest(expectedHMAC, message, sharedSecret string) bool {
-	h := hmac.New(sha256.New, []byte(sharedSecret))
-	h.Write([]byte(message))
-	return hmac.Equal([]byte(expectedHMAC), []byte(hex.EncodeToString(h.Sum(nil))))
-}
 
 // GetPermanentAccessToken returns the shop name and permanent access token respectively
 func GetPermanentAccessToken(shop string, apiKey, apiSecret string, code string) shopify.ShopifyAuthResponse {
@@ -64,12 +57,19 @@ func GetPermanentAccessToken(shop string, apiKey, apiSecret string, code string)
 }
 
 type ShopifyPageData struct {
-	Config *Config
-	Shop   string
+	Config    *Config
+	Shop      string
+	HMac      string
+	Timestamp string
+	Locale    string
+	Protocol  string
 }
+
+const messageInvalidRequest = "Invalid request. Please contact support."
 
 func (s *Server) handleShopifyHome() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		tmpl, err := template.ParseFiles("template/home.html")
 		if err != nil {
 			panic(err)
@@ -77,9 +77,18 @@ func (s *Server) handleShopifyHome() http.HandlerFunc {
 
 		params := r.URL.Query()
 
+		if !shopify.AuthenticateShopifyRequest(params, s.Config.ShopifyApiSecret) {
+			fmt.Fprintf(w, messageInvalidRequest)
+			return
+		}
+
 		data := ShopifyPageData{
-			Config: s.Config,
-			Shop:   params["shop"][0],
+			Config:    s.Config,
+			Shop:      params.Get("shop"),
+			HMac:      params.Get("hmac"),
+			Timestamp: params.Get("timestamp"),
+			Locale:    params.Get("locale"),
+			Protocol:  params.Get("protocol"),
 		}
 
 		err = tmpl.Execute(w, data)
@@ -107,7 +116,7 @@ func (s *Server) handleShopifyCallback() http.HandlerFunc {
 		apiKey := s.Config.ShopifyApiKey
 		apiSecret := s.Config.ShopifyApiSecret
 
-		if verifyRequest(hmac, message, apiSecret) {
+		if shopify.VerifyRequest(hmac, message, apiSecret) {
 			log.Printf("Received Valid HMAC Request for New Installation (%s)", shop)
 		} else {
 			log.Println("Invalid request to install app")
@@ -117,7 +126,7 @@ func (s *Server) handleShopifyCallback() http.HandlerFunc {
 		tokenResp := GetPermanentAccessToken(shop, apiKey, apiSecret, code)
 
 		log.Printf("Received access token: %s\n", tokenResp.AccessToken)
-		client := shopify.ShopifyClient{
+		client := shopify.ShopifyClientConfig{
 			Shop:         shop,
 			IndexAddress: s.Config.DefaultIndexAddress,
 			AuthResponse: tokenResp,
@@ -139,10 +148,46 @@ func (s *Server) handleShopifyCallback() http.HandlerFunc {
 	}
 }
 
-func (s *Server) handleIndexCatalog() http.HandlerFunc {
+func (s *Server) handleBuildIndex() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		query := r.URL.Query()
-		log.Println(query)
-		fmt.Fprintf(w, "indexing catalog")
+		params := r.URL.Query()
+		if !shopify.AuthenticateShopifyRequest(params, s.Config.ShopifyApiSecret) {
+			fmt.Fprintf(w, messageInvalidRequest)
+			return
+		} else {
+			shop := params.Get("shop")
+			var shopClient shopify.ShopifyClientConfig
+			err := s.ClientsStore.Get(shop, &shopClient)
+			if err != nil {
+				log.Printf("Error in handleBuildIndex() for shop: %s: %s", shop, err.Error())
+				log.Println(shopClient)
+			}
+
+			// send job to indexing server
+			indexWorker := s.Config.IndexingWorkerServices[0]
+			cli := &http.Client{
+				Timeout: time.Second * 10,
+			}
+
+			b, err := json.Marshal(shopClient)
+			if err != nil {
+				log.Printf("Error marshalling ShopifyClientConfig: %s", err)
+			}
+			req, err := http.NewRequest("POST", indexWorker+s.Config.IndexingWorkerEndpoint, bytes.NewBuffer(b))
+			if err != nil {
+				log.Printf("Error building http request: %s", err)
+			}
+			resp, err := cli.Do(req)
+			if err != nil {
+				log.Println("Error sending request: %s", err)
+			}
+			defer resp.Body.Close()
+
+			log.Println("made it here")
+			//shopify.CrawlProducts(&shopClient, 3, "", s.Search)
+
+		}
+		redir := r.Referer()
+		http.Redirect(w, r, redir, 307)
 	}
 }

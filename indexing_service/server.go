@@ -30,11 +30,7 @@ func NewServer(port int, searchImpl string) (*Server, error) {
 	s.Search = searchEngine
 
 	// routes
-	s.Router = mux.NewRouter()
-	s.Router.HandleFunc("/ping", s.handlePing())
-	s.Router.HandleFunc("/api/indexShopify", s.restEndpoint(s.handleIndexShopifyCatalog())).Methods("POST")
-	s.Router.HandleFunc("/api/indexShopify", s.restEndpoint(s.handleClearShopifyCatalog())).Methods("DELETE")
-	s.Router.HandleFunc("/api/admin/indexStats", s.restEndpoint(s.handleAdminIndexStats())).Methods("GET")
+	s.Routes()
 
 	s.HttpServer = &http.Server{
 		Handler:      s.Router,

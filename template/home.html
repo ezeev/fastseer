@@ -10,6 +10,19 @@
         </script>
       </head>
 
-    <body>home page</body>
+    <body>home page
+
+      <p></p>
+      <a href="/shopify/buildIndex?shop={{ .Shop }}&hmac={{ .HMac }}&timestamp={{ .Timestamp }}&locale={{ .Locale }}">Link test</a>
+
+      <form action="/shopify/buildIndex" method="GET">
+        <input type="hidden" name="shop" value="{{ .Shop }}" />
+        <input type="hidden" name="hmac" value="{{ .HMac }}" />
+        <input type="hidden" name="timestamp" value="{{ .Timestamp }}" />
+        <input type="hidden" name="locale" value="{{ .Locale }}" />
+        <button>Submit</button>
+      </form>
+
+    </body>
 
 </html>

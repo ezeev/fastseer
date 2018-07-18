@@ -37,7 +37,7 @@ func NewServer(confPath string) (*Server, error) {
 	}
 	opts := s.Config.DbOptions
 	opts["table"] = "clients"
-	opts["keyField"] = "store"
+	opts["keyField"] = "shop"
 	err = clientsStore.Open(opts)
 	if err != nil {
 		return nil, err
@@ -51,14 +51,8 @@ func NewServer(confPath string) (*Server, error) {
 	}
 
 	s.Search = searchEngine
-	s.Router = mux.NewRouter()
 
-	// setup routes
-	s.Router.HandleFunc("/ping", s.handlePing())
-
-	// shopify routes
-	s.Router.HandleFunc("/shopify/callback", s.handleShopifyCallback())
-	s.Router.HandleFunc("/shopify", s.handleShopifyHome())
+	s.Routes()
 
 	s.HttpServer = &http.Server{
 		Handler:      s.Router,

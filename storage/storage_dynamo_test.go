@@ -50,15 +50,16 @@ func TestDynamoImplPutAndGet(t *testing.T) {
 		t.Fail()
 	}
 
-	client := shopify.ShopifyClient{}
+	client := shopify.ShopifyClientConfig{}
 	client.Shop = "acme"
+	client.IndexAddress = "http://solrurl.com"
 
 	err = db.Put(client.Shop, client)
 	if err != nil {
 		t.Error(err)
 	}
 
-	var newClient shopify.ShopifyClient
+	var newClient shopify.ShopifyClientConfig
 	err = db.Get("acme", &newClient)
 	if err != nil {
 		t.Error(err)

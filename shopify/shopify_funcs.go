@@ -1,6 +1,11 @@
 package shopify
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -9,6 +14,8 @@ import (
 
 	"github.com/ezeev/fastseer/search"
 )
+
+const tagLimit = 10
 
 func CreateClientCollections(searchEngine search.SearchEngine, searchAddr string, shop string) {
 	collectionOpts := map[string]string{"numShards": "1", "replicationFactor": "1"}
@@ -19,6 +26,24 @@ func CreateClientCollections(searchEngine search.SearchEngine, searchAddr string
 	searchEngine.CreateIndex(shop+"_analytics", searchAddr, collectionOpts)
 
 	time.Sleep(time.Second * 3)
+}
+
+func AuthenticateShopifyRequest(params url.Values, secretKey string) bool {
+
+	hmac := params.Get("hmac")
+	locale := params.Get("locale")
+	shop := params.Get("shop")
+	timestamp := params.Get("timestamp")
+
+	messageString := "locale=%s&protocol=https://&shop=%s&timestamp=%s"
+	message := fmt.Sprintf(messageString, locale, shop, timestamp)
+	return VerifyRequest(hmac, message, secretKey)
+}
+
+func VerifyRequest(expectedHMAC, message, sharedSecret string) bool {
+	h := hmac.New(sha256.New, []byte(sharedSecret))
+	h.Write([]byte(message))
+	return hmac.Equal([]byte(expectedHMAC), []byte(hex.EncodeToString(h.Sum(nil))))
 }
 
 func IndexProducts(productBatch *ShopifyApiProductsResponse, searchEngine search.SearchEngine, config *ShopifyClientConfig) error {
@@ -33,6 +58,9 @@ func IndexProducts(productBatch *ShopifyApiProductsResponse, searchEngine search
 		productID := product.ID
 		productType := product.ProductType
 		productTags := strings.Split(product.Tags, ", ")
+		if len(productTags) > tagLimit {
+			productTags = productTags[0:tagLimit]
+		}
 		productImage := product.Image.Src
 
 		// variants
@@ -42,7 +70,7 @@ func IndexProducts(productBatch *ShopifyApiProductsResponse, searchEngine search
 			variantTitle := variant.Title
 			variantPrice := variant.Price
 			variantSku := variant.Sku
-			variantKeywords := productTitle + " " + variant.Title + " " + product.Tags
+			variantKeywords := productTitle + " " + variant.Title + " " + strings.Join(productTags, " ")
 
 			doc.SetField("id", []string{strconv.Itoa(id)})
 			doc.SetField("productTitle_txt_en", []string{productTitle})

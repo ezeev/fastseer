@@ -29,6 +29,7 @@ func (s *Server) handleIndexShopifyCatalog() http.HandlerFunc {
 		var shop shopify.ShopifyClientConfig
 		err := decoder.Decode(&shop)
 		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
 			log.Printf("Error reading shopify client config: %s", err)
 			fmt.Fprintf(w, "Error reading shopify client config")
 		}
@@ -36,10 +37,10 @@ func (s *Server) handleIndexShopifyCatalog() http.HandlerFunc {
 		pageSize := 3
 		count, err := shopify.GetNumProducts(shop.AuthResponse.AccessToken, shop.Shop)
 		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
 			log.Printf("Error getting product count: %s", err)
 		}
 		//required params
-		//go shopify.CrawlProducts(token, shop, pageSize, "", s.Search, indexAddress)
 		go func() {
 			// start the job
 			runningJobs.Store(shop.Shop, time.Now().Unix())
@@ -59,7 +60,11 @@ func (s *Server) handleIndexShopifyCatalog() http.HandlerFunc {
 			PageSize:        pageSize,
 		}
 
-		json.NewEncoder(w).Encode(resp)
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			log.Printf("Error: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 
 	}
 }
@@ -73,12 +78,15 @@ func (s *Server) handleClearShopifyCatalog() http.HandlerFunc {
 		err := decoder.Decode(&shop)
 		if err != nil {
 			log.Printf("Error reading shopify client config: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "Error reading shopify client config")
 		}
 
 		err = s.Search.DeleteDocuments(shop.Shop, shop.IndexAddress, "*:*")
 		if err != nil {
 			log.Printf("Error clearing index: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "Error clearing index: "+err.Error())
 		}
 
 		fmt.Fprintf(w, "Clearing index")
@@ -93,6 +101,7 @@ func (s *Server) handleAdminIndexStats() http.HandlerFunc {
 			jobs[k.(string)] = v
 			return true
 		})
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(jobs)
 	}
 }
