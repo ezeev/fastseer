@@ -1,15 +1,16 @@
 package main
 
 import (
-	"log"
 	"os"
 	"os/signal"
+
+	"github.com/ezeev/fastseer/logger"
 )
 
 func main() {
 	server, err := NewServer(8083, "solr")
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal("None", err.Error())
 	}
 
 	stop := make(chan os.Signal, 1)

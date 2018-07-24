@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/ezeev/fastseer/logger"
 
 	"github.com/ezeev/fastseer/shopify"
 )
@@ -30,7 +31,7 @@ func (s *Server) handleIndexShopifyCatalog() http.HandlerFunc {
 		err := decoder.Decode(&shop)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			log.Printf("Error reading shopify client config: %s", err)
+			logger.Error(shop.Shop, err.Error())
 			fmt.Fprintf(w, "Error reading shopify client config")
 		}
 
@@ -38,7 +39,7 @@ func (s *Server) handleIndexShopifyCatalog() http.HandlerFunc {
 		count, err := shopify.GetNumProducts(shop.AuthResponse.AccessToken, shop.Shop)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			log.Printf("Error getting product count: %s", err)
+			logger.Error(shop.Shop, err.Error())
 		}
 		//required params
 		go func() {
@@ -46,7 +47,7 @@ func (s *Server) handleIndexShopifyCatalog() http.HandlerFunc {
 			runningJobs.Store(shop.Shop, time.Now().Unix())
 			err := shopify.CrawlProducts(&shop, pageSize, "", s.Search)
 			if err != nil {
-				log.Println(err)
+				//logger.Error(shop.Shop, "handleIndexShopifyCatalog()")
 			}
 			time.Sleep(time.Second)
 			// remove job
@@ -62,7 +63,7 @@ func (s *Server) handleIndexShopifyCatalog() http.HandlerFunc {
 
 		err = json.NewEncoder(w).Encode(resp)
 		if err != nil {
-			log.Printf("Error: %s", err)
+			logger.Error(shop.Shop, err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 
@@ -77,14 +78,13 @@ func (s *Server) handleClearShopifyCatalog() http.HandlerFunc {
 		var shop shopify.ShopifyClientConfig
 		err := decoder.Decode(&shop)
 		if err != nil {
-			log.Printf("Error reading shopify client config: %s", err)
+			logger.Error(shop.Shop, err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "Error reading shopify client config")
 		}
 
 		err = s.Search.DeleteDocuments(shop.Shop, shop.IndexAddress, "*:*")
 		if err != nil {
-			log.Printf("Error clearing index: %s", err)
+			logger.Error(shop.Shop, err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "Error clearing index: "+err.Error())
 		}

@@ -2,9 +2,10 @@ package search
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"time"
+
+	"github.com/ezeev/fastseer/logger"
 
 	"github.com/ezeev/fastseer/util"
 	"github.com/ezeev/solrg"
@@ -37,7 +38,7 @@ func (s *SolrSearch) CreateIndex(name string, address string, options map[string
 	createErr := sc.CreateCollection(name, shards, replicas, time.Second*10)
 	if _, ok := createErr.(*solrg.SolrCollectionExistsError); ok {
 		// collection already exists, log but don't throw an error
-		log.Println("Collection already exists - not throwing error!")
+		logger.Info(name, "Collection already exists - not throwing error!")
 	} else {
 		return err
 	}
@@ -64,7 +65,6 @@ func (s *SolrSearch) IndexDocuments(indexName string, solrUrl string, docs inter
 		}
 		err = cli.PostDocs(solrDocs, indexName)
 		if err != nil {
-			log.Printf("Error indexing documents: %s", err.Error())
 			return err
 		}
 		cli.Commit(indexName)

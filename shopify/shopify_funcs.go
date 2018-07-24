@@ -4,14 +4,20 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/ezeev/fastseer/storage"
+
 	"github.com/ezeev/solrg"
 
+	"github.com/ezeev/fastseer/logger"
 	"github.com/ezeev/fastseer/search"
 )
 
@@ -87,5 +93,96 @@ func IndexProducts(productBatch *ShopifyApiProductsResponse, searchEngine search
 
 	}
 	return searchEngine.IndexDocuments(config.Shop, config.IndexAddress, &docs)
+}
 
+// GetPermanentAccessToken returns the shop name and permanent access token respectively
+func GetPermanentAccessToken(shop string, apiKey, apiSecret string, code string) ShopifyAuthResponse {
+
+	tokenUrl := fmt.Sprintf("https://%s/admin/oauth/access_token", shop)
+	v := url.Values{}
+	v.Set("client_id", apiKey)
+	v.Set("client_secret", apiSecret)
+	v.Set("code", code)
+	s := v.Encode()
+	req, err := http.NewRequest("POST", tokenUrl, strings.NewReader(s))
+	if err != nil {
+		logger.Error(shop, "Unable to build request: "+err.Error())
+	}
+
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	c := &http.Client{}
+
+	logger.Info(shop, "requesting token at "+tokenUrl)
+
+	resp, err := c.Do(req)
+	if err != nil {
+		logger.Error(shop, "executing request: "+err.Error())
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		logger.Error(shop, err.Error())
+	}
+
+	var tokenResp ShopifyAuthResponse
+	err = json.Unmarshal(data, &tokenResp)
+	if err != nil {
+		logger.Error(shop, err.Error())
+	}
+	return tokenResp
+}
+
+func ShopClientConfig(shop string, s storage.Storage) (*ShopifyClientConfig, error) {
+	var shopClient ShopifyClientConfig
+	err := s.Get(shop, &shopClient)
+	if err != nil {
+		return nil, err
+	}
+	return &shopClient, nil
+}
+
+func NumIndexedProducts(shop *ShopifyClientConfig, engine search.SearchEngine) (int, error) {
+
+	//fq={!collapse%20field=productId_s}
+	q := &solrg.SolrParams{
+		Q:    "*:*",
+		Rows: "0",
+		Fq:   []string{"{!collapse field=productId_s}"},
+	}
+
+	resp, err := engine.Query(shop.Shop, shop.IndexAddress, q)
+	if err != nil {
+		return 0, err
+	}
+
+	solrResp, ok := resp.(*solrg.SolrSearchResponse)
+	if ok {
+		return solrResp.Response.NumFound, nil
+	} else {
+		return 0, fmt.Errorf("Type assertion to *solrg.SolrSearchResponse fails")
+	}
+	return 0, err
+}
+
+func NumIndexedVariants(shop *ShopifyClientConfig, engine search.SearchEngine) (int, error) {
+
+	q := &solrg.SolrParams{
+		Q:    "*:*",
+		Rows: "0",
+	}
+
+	resp, err := engine.Query(shop.Shop, shop.IndexAddress, q)
+	if err != nil {
+		return 0, err
+	}
+
+	solrResp, ok := resp.(*solrg.SolrSearchResponse)
+	if ok {
+		return solrResp.Response.NumFound, nil
+	} else {
+		return 0, fmt.Errorf("Type assertion to *solrg.SolrSearchResponse fails")
+	}
+	return 0, err
 }

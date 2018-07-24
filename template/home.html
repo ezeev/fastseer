@@ -8,20 +8,69 @@
             shopOrigin: 'https://{{ .Shop }}'
           });
         </script>
+
+        <script type="text/javascript">
+          ShopifyApp.ready(function(){
+            ShopifyApp.Bar.initialize({
+              //icon: 'http://localhost:3001/assets/header-icon.png',
+              title: 'Configuration',
+              buttons: {
+                primary: {
+                  label: 'Save',
+                  message: 'save',
+                  callback: function(){
+                    ShopifyApp.Bar.loadingOn();
+                    doSomeCustomAction();
+                  }
+                }
+              }
+            });
+          });
+          
+          {{ if .FlashMessage }}
+            ShopifyApp.flashNotice("{{ .FlashMessage }}");
+          {{ end }}
+
+        </script>
+
+
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.bundle.min.js" integrity="sha384-CS0nxkpPy+xUkNGhObAISrkg/xjb3USVCwy+0/NMzd5VxgY4CMCyTkItmy5n0voC" crossorigin="anonymous"></script>
       </head>
 
-    <body>home page
+    <body>
 
-      <p></p>
-      <a href="/shopify/buildIndex?shop={{ .Shop }}&hmac={{ .HMac }}&timestamp={{ .Timestamp }}&locale={{ .Locale }}">Link test</a>
 
-      <form action="/shopify/buildIndex" method="GET">
-        <input type="hidden" name="shop" value="{{ .Shop }}" />
-        <input type="hidden" name="hmac" value="{{ .HMac }}" />
-        <input type="hidden" name="timestamp" value="{{ .Timestamp }}" />
-        <input type="hidden" name="locale" value="{{ .Locale }}" />
-        <button>Submit</button>
-      </form>
+      <!--a href="/shopify/buildIndex?shop={{ .Shop }}&hmac={{ .HMac }}&timestamp={{ .Timestamp }}&locale={{ .Locale }}">Build Index</a-->
+      
+      <div class="container-fluid">
+
+          <h3>Indexing Ops</h3>
+  
+          Stats:
+          
+
+          <form action="/shopify/buildIndex" style="display: inline;" method="GET">
+            <input type="hidden" name="shop" value="{{ .Shop }}" />
+            <input type="hidden" name="hmac" value="{{ .HMac }}" />
+            <input type="hidden" name="timestamp" value="{{ .Timestamp }}" />
+            <input type="hidden" name="locale" value="{{ .Locale }}" />
+            <button class="ui-button btn-primary" type="submit" name="button">Build Index</button>
+          </form>
+    
+          <form action="/shopify/clearIndex" style="display: inline;" method="GET">
+            <input type="hidden" name="shop" value="{{ .Shop }}" />
+            <input type="hidden" name="hmac" value="{{ .HMac }}" />
+            <input type="hidden" name="timestamp" value="{{ .Timestamp }}" />
+            <input type="hidden" name="locale" value="{{ .Locale }}" />
+            <button class="ui-button btn-warning" type="submit" name="button">Clear Index</button>
+          </form>
+
+      </div>
+
+ 
+
 
     </body>
 

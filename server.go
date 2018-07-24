@@ -3,10 +3,10 @@ package fastseer
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
+	"github.com/ezeev/fastseer/logger"
 	"github.com/ezeev/fastseer/search"
 	"github.com/ezeev/fastseer/storage"
 	"github.com/gorilla/mux"
@@ -81,7 +81,8 @@ func (s *Server) Shutdown() error {
 	if err != nil {
 		return err
 	}
-	log.Println("Server shutdown gracefully")
+
+	logger.Info("None", "Server was shutdown gracefully")
 	return nil
 }
 

@@ -3,6 +3,8 @@ package shopify
 import (
 	"encoding/json"
 	"testing"
+
+	"github.com/ezeev/fastseer/search"
 )
 
 func testShopifyConfig() *ShopifyClientConfig {
@@ -11,6 +13,11 @@ func testShopifyConfig() *ShopifyClientConfig {
 		Shop:         "fastseer-staging.myshopify.com",
 		IndexAddress: "172.104.9.135:8983/solr",
 	}
+}
+
+func testSearchEngine() search.SearchEngine {
+	engine, _ := search.NewSearchEngine("solr")
+	return engine
 }
 
 func TestProductCountApi(t *testing.T) {
@@ -33,4 +40,25 @@ func TestCrawlProducts(t *testing.T) {
 	b, _ := json.Marshal(shop)
 	t.Log(string(b))
 	CrawlProducts(shop, 3, "", nil)
+}
+
+func TestShopifySearches(t *testing.T) {
+
+	shop := testShopifyConfig()
+
+	num, err := NumIndexedProducts(shop, testSearchEngine())
+	if err != nil {
+		t.Error(err)
+	}
+
+	t.Logf("There are %d indexed prodcuts", num)
+
+	//variantes
+	num, err = NumIndexedVariants(shop, testSearchEngine())
+	if err != nil {
+		t.Error(err)
+	}
+
+	t.Logf("There are %d indexed variantes", num)
+
 }

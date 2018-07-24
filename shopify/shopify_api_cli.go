@@ -2,11 +2,13 @@ package shopify
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/ezeev/fastseer/logger"
 
 	"github.com/ezeev/fastseer/search"
 )
@@ -53,7 +55,7 @@ func CrawlProducts(shop *ShopifyClientConfig, pageSize int, sinceID string, engi
 	}
 	req.URL.RawQuery = params.Encode()
 
-	log.Printf("Shop: %s, Executing query with last ID: %s\n, page size: %d", shop.Shop, sinceID, pageSize)
+	logger.Info(shop.Shop, fmt.Sprintf("Executing query with last ID: %s\n, page size: %d", sinceID, pageSize))
 
 	resp, err := cli.Do(req)
 	if err != nil {
@@ -62,24 +64,24 @@ func CrawlProducts(shop *ShopifyClientConfig, pageSize int, sinceID string, engi
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Printf("Shop: %s, ioutil.ReadAll() error: %v\n", shop.Shop, err)
+		logger.Error(shop.Shop, err.Error())
 	}
 
 	var products ShopifyApiProductsResponse
 	err = json.Unmarshal(data, &products)
 	if err != nil {
-		log.Printf("Shop: %s, Error serializing json: %s", shop.Shop, err)
+		logger.Error(shop.Shop, err.Error())
 	}
-	log.Printf("Shop: %s, Received %d products in response", shop.Shop, len(products.Products))
+	logger.Info(shop.Shop, fmt.Sprintf("Received %d products in response", len(products.Products)))
+
 	var numVariants int
 	for _, v := range products.Products {
 		numVariants += len(v.Variants)
-		log.Printf("Product %d has %d variants", v.ID, numVariants)
 	}
 
 	if len(products.Products) > 0 {
 		lastID := strconv.Itoa(products.Products[len(products.Products)-1].ID)
-		log.Printf("Shop: %s, last ID: %s", shop.Shop, lastID)
+		logger.Info(shop.Shop, "last ID: "+lastID)
 		time.Sleep(time.Second * 1)
 
 		// send to search
@@ -87,10 +89,9 @@ func CrawlProducts(shop *ShopifyClientConfig, pageSize int, sinceID string, engi
 		if err != nil {
 			return err
 		}
-
 		CrawlProducts(shop, pageSize, string(lastID), engine)
 	} else {
-		log.Printf("Shop: %s, No more products to crawl.", shop.Shop)
+		logger.Info(shop.Shop, "No more products to crawl")
 	}
 
 	return nil
