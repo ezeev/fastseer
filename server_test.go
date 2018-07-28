@@ -6,6 +6,10 @@ import (
 	"github.com/ezeev/go-examples/xserver"
 )
 
+func JwtTest(t *testing.T) {
+
+}
+
 func TestServer(t *testing.T) {
 
 	server := xserver.NewServer(8081)

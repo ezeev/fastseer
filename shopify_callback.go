@@ -46,6 +46,19 @@ func (s *Server) handleShopifyCallback() http.HandlerFunc {
 			logger.Error(shop, err.Error())
 		}
 
+		// install Javascript on the shop's site
+		resp, err := shopify.InstallShopScriptTag(&client, s.Config.AppDomain)
+		if err != nil {
+			logger.Error(shop, err.Error())
+		}
+		logger.Info(shop, fmt.Sprintf("Created script tag id: %d", resp.ScriptTag.ID))
+
+		// install custom search form asset on the shop's site
+		err = shopify.InstallSearchFormThemeAsset(&client)
+		if err != nil {
+			logger.Error(shop, err.Error())
+		}
+
 		// create the search collections for this customer
 		// In the future, we may allocate different customers to different Solr clusters
 		// once a cluster reaches full capacity

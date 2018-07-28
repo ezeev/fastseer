@@ -35,8 +35,8 @@
 
 
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.bundle.min.js" integrity="sha384-CS0nxkpPy+xUkNGhObAISrkg/xjb3USVCwy+0/NMzd5VxgY4CMCyTkItmy5n0voC" crossorigin="anonymous"></script>
+        <!--script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.bundle.min.js" integrity="sha384-CS0nxkpPy+xUkNGhObAISrkg/xjb3USVCwy+0/NMzd5VxgY4CMCyTkItmy5n0voC" crossorigin="anonymous"></script-->
       </head>
 
     <body>
@@ -46,28 +46,69 @@
       
       <div class="container-fluid">
 
-          <h3>Indexing Ops</h3>
-  
-          Stats:
-          
+          <div class="row" style="padding: 10px;">
+            <div class="col">
+              <h4>Indexing</h4>
+              <i>How your product data is stored.</i>
+            </div>
+          </div>
 
-          <form action="/shopify/buildIndex" style="display: inline;" method="GET">
-            <input type="hidden" name="shop" value="{{ .Shop }}" />
-            <input type="hidden" name="hmac" value="{{ .HMac }}" />
-            <input type="hidden" name="timestamp" value="{{ .Timestamp }}" />
-            <input type="hidden" name="locale" value="{{ .Locale }}" />
-            <button class="ui-button btn-primary" type="submit" name="button">Build Index</button>
-          </form>
-    
-          <form action="/shopify/clearIndex" style="display: inline;" method="GET">
-            <input type="hidden" name="shop" value="{{ .Shop }}" />
-            <input type="hidden" name="hmac" value="{{ .HMac }}" />
-            <input type="hidden" name="timestamp" value="{{ .Timestamp }}" />
-            <input type="hidden" name="locale" value="{{ .Locale }}" />
-            <button class="ui-button btn-warning" type="submit" name="button">Clear Index</button>
-          </form>
+          <div class="row" style="padding-bottom: 10px"> <!-- start row -->
+              <div class="col-md-1"></div>
+              <div class="col-md-11"> <!-- start col -->
+      
+                <h5>Products: <span class="badge badge-success">{{.NumProducts }}</span> Variants: <span class="badge badge-success">{{.NumVariants }}</span></h5>
 
-      </div>
+
+              </div> <!-- end col -->
+          </div> <!-- end row -->
+      
+          <div class="row"> <!-- start row -->
+            <div class="col-md-1"></div>
+            <div class="col-md-11"> <!-- start col -->
+              
+              <form action="/shopify/buildIndex" style="display: inline;" method="GET">
+                <input type="hidden" name="shop" value="{{ .Shop }}" />
+                <input type="hidden" name="hmac" value="{{ .HMac }}" />
+                <input type="hidden" name="timestamp" value="{{ .Timestamp }}" />
+                <input type="hidden" name="locale" value="{{ .Locale }}" />
+                <button class="ui-button btn-primary" type="submit" name="button">Build Index</button>
+              </form>
+        
+              <form action="/shopify/clearIndex" style="display: inline;" method="GET">
+                <input type="hidden" name="shop" value="{{ .Shop }}" />
+                <input type="hidden" name="hmac" value="{{ .HMac }}" />
+                <input type="hidden" name="timestamp" value="{{ .Timestamp }}" />
+                <input type="hidden" name="locale" value="{{ .Locale }}" />
+                <button class="ui-button btn-warning" type="submit" name="button">Clear Index</button>
+              </form>
+          </div> <!-- end col -->
+        </div> <!-- end row -->
+
+        <div class="row" style="padding: 10px;">
+          <div class="col">
+            <h4>Theme</h4>
+            <i>Theme Assets</i>
+          </div>
+        </div>
+
+        <div class="row"> <!-- start row -->
+          <div class="col-md-1"></div>
+          <div class="col-md-11"> <!-- start col -->
+            
+            <form action="/shopify/reinstallSearchForm" style="display: inline;" method="GET">
+              <input type="hidden" name="shop" value="{{ .Shop }}" />
+              <input type="hidden" name="hmac" value="{{ .HMac }}" />
+              <input type="hidden" name="timestamp" value="{{ .Timestamp }}" />
+              <input type="hidden" name="locale" value="{{ .Locale }}" />
+              <button class="ui-button btn-primary" type="submit" name="button">Re-install Search Form</button>
+            </form>
+      
+        </div> <!-- end col -->
+      </div> <!-- end row -->
+        
+
+      </div> <!-- end container -->
 
  
 

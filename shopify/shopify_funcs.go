@@ -6,7 +6,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -23,6 +25,16 @@ import (
 
 const tagLimit = 10
 
+func httpClient(token string, shop string, method string, endPoint string, payLoad io.Reader) (*http.Client, *http.Request) {
+	var netClient = &http.Client{
+		Timeout: time.Second * 10,
+	}
+	req, _ := http.NewRequest(method, "https://"+shop+endPoint, payLoad)
+	req.Header.Add("X-Shopify-Access-Token", token)
+	req.Header.Set("Content-Type", "application/json")
+	return netClient, req
+}
+
 func CreateClientCollections(searchEngine search.SearchEngine, searchAddr string, shop string) {
 	collectionOpts := map[string]string{"numShards": "1", "replicationFactor": "1"}
 	searchEngine.CreateIndex(shop, searchAddr, collectionOpts)
@@ -30,6 +42,10 @@ func CreateClientCollections(searchEngine search.SearchEngine, searchAddr string
 	time.Sleep(time.Second * 3)
 
 	searchEngine.CreateIndex(shop+"_analytics", searchAddr, collectionOpts)
+
+	time.Sleep(time.Second * 3)
+
+	searchEngine.CreateIndex(shop+"_typeahead", searchAddr, collectionOpts)
 
 	time.Sleep(time.Second * 3)
 }
@@ -56,7 +72,8 @@ func IndexProducts(productBatch *ShopifyApiProductsResponse, searchEngine search
 
 	// index fields
 
-	docs := solrg.NewSolrDocumentCollection()
+	docsPrimary := solrg.NewSolrDocumentCollection()
+	docsTypeAhead := solrg.NewSolrDocumentCollection()
 
 	for _, product := range productBatch.Products {
 
@@ -69,6 +86,16 @@ func IndexProducts(productBatch *ShopifyApiProductsResponse, searchEngine search
 		}
 		productImage := product.Image.Src
 
+		//build typeahead doc
+		log.Println(productType)
+		typeAheadDoc := solrg.NewSolrDocument("product-" + strconv.Itoa(productID))
+		typeAheadDoc.SetField("productType_s", []string{productType})
+		typeAheadDoc.SetField("type_s", []string{"product"})
+		typeAheadDoc.SetField("title_txt", []string{productTitle})
+		typeAheadDoc.SetField("img_s", []string{productImage})
+
+		lowestPrice := 0.0
+
 		// variants
 		for _, variant := range product.Variants {
 			doc := solrg.NewSolrDocument("")
@@ -77,6 +104,11 @@ func IndexProducts(productBatch *ShopifyApiProductsResponse, searchEngine search
 			variantPrice := variant.Price
 			variantSku := variant.Sku
 			variantKeywords := productTitle + " " + variant.Title + " " + strings.Join(productTags, " ")
+
+			p, err := strconv.ParseFloat(variantPrice, 32)
+			if err == nil && p < lowestPrice {
+				lowestPrice = p
+			}
 
 			doc.SetField("id", []string{strconv.Itoa(id)})
 			doc.SetField("productTitle_txt_en", []string{productTitle})
@@ -88,11 +120,19 @@ func IndexProducts(productBatch *ShopifyApiProductsResponse, searchEngine search
 			doc.SetField("variantPrice_f", []string{variantPrice})
 			doc.SetField("variantSku_s", []string{variantSku})
 			doc.SetField("variantKeywords_txt_en", []string{variantKeywords})
-			docs.AddDoc(doc)
+			docsPrimary.AddDoc(doc)
 		}
+		typeAheadDoc.SetField("from_price_f", []string{fmt.Sprintf("%f", lowestPrice)})
+		docsTypeAhead.AddDoc(typeAheadDoc)
 
 	}
-	return searchEngine.IndexDocuments(config.Shop, config.IndexAddress, &docs)
+	//typeahead
+	err := searchEngine.IndexDocuments(config.Shop+"_typeahead", config.IndexAddress, &docsTypeAhead)
+	if err != nil {
+		return err
+	}
+
+	return searchEngine.IndexDocuments(config.Shop, config.IndexAddress, &docsPrimary)
 }
 
 // GetPermanentAccessToken returns the shop name and permanent access token respectively
@@ -167,7 +207,6 @@ func NumIndexedProducts(shop *ShopifyClientConfig, engine search.SearchEngine) (
 }
 
 func NumIndexedVariants(shop *ShopifyClientConfig, engine search.SearchEngine) (int, error) {
-
 	q := &solrg.SolrParams{
 		Q:    "*:*",
 		Rows: "0",

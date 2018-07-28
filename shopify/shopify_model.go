@@ -14,6 +14,32 @@ type ShopifyAuthResponse struct {
 	} `json:"associated_user"`
 }
 
+type ShopifyApiProductCount struct {
+	Count int `json:"count"`
+}
+
+type ShopifyScriptTagsResponse struct {
+	ScriptTags []struct {
+		ID           int    `json:"id"`
+		Src          string `json:"src"`
+		Event        string `json:"event"`
+		CreatedAt    string `json:"created_at"`
+		UpdatedAt    string `json:"updated_at"`
+		DisplayScope string `json:"display_scope"`
+	} `json:"script_tags"`
+}
+
+type ShopifyPostScriptTagResponse struct {
+	ScriptTag struct {
+		ID           int    `json:"id"`
+		Src          string `json:"src"`
+		Event        string `json:"event"`
+		CreatedAt    string `json:"created_at"`
+		UpdatedAt    string `json:"updated_at"`
+		DisplayScope string `json:"display_scope"`
+	} `json:"script_tag"`
+}
+
 type ShopifyClientConfig struct {
 	Shop         string              `json:"shop"`
 	IndexAddress string              `json:"indexAddress"`
@@ -97,4 +123,25 @@ type ShopifyApiProductsResponse struct {
 			AdminGraphqlAPIID string        `json:"admin_graphql_api_id"`
 		} `json:"image"`
 	} `json:"products"`
+}
+
+type ShopifyGetThemesResponse struct {
+	Themes []struct {
+		ID                int    `json:"id"`
+		Name              string `json:"name"`
+		CreatedAt         string `json:"created_at"`
+		UpdatedAt         string `json:"updated_at"`
+		Role              string `json:"role"`
+		ThemeStoreID      int    `json:"theme_store_id"`
+		Previewable       bool   `json:"previewable"`
+		Processing        bool   `json:"processing"`
+		AdminGraphqlAPIID string `json:"admin_graphql_api_id"`
+	} `json:"themes"`
+}
+
+type ShopifyAssetPutPayload struct {
+	Asset struct {
+		Key   string `json:"key"`
+		Value string `json:"value"`
+	} `json:"asset"`
 }

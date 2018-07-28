@@ -41,6 +41,8 @@ type ShopifyPageData struct {
 	Timestamp    string
 	Locale       string
 	Protocol     string
+	NumProducts  int
+	NumVariants  int
 	ShopConfig   *shopify.ShopifyClientConfig
 }
 
@@ -57,11 +59,21 @@ func (s *Server) handleShopifyHome() http.HandlerFunc {
 		params := r.URL.Query()
 
 		shop := params.Get("shop")
+
 		shopClient, err := shopify.ShopClientConfig(shop, s.ClientsStore)
 		if err != nil {
 			logger.Error(shop, "Unable to load config: %s"+err.Error())
 			fmt.Fprintf(w, "Unable to load config for shop.")
 			return
+		}
+
+		numProd, err := shopify.NumIndexedProducts(shopClient, s.Search)
+		if err != nil {
+			logger.Error(shop, err.Error())
+		}
+		numVar, err := shopify.NumIndexedVariants(shopClient, s.Search)
+		if err != nil {
+			logger.Error(shop, err.Error())
 		}
 
 		data := ShopifyPageData{
@@ -73,12 +85,9 @@ func (s *Server) handleShopifyHome() http.HandlerFunc {
 			Locale:       params.Get("locale"),
 			Protocol:     params.Get("protocol"),
 			ShopConfig:   shopClient,
+			NumProducts:  numProd,
+			NumVariants:  numVar,
 		}
-		/*cookie, _ := r.Cookie(flashMessageCookieName)
-		if cookie != nil {
-			data.FlashMessage = cookie.Value
-		}*/
-
 		err = tmpl.Execute(w, data)
 		if err != nil {
 			panic(err)
@@ -151,5 +160,25 @@ func (s *Server) handleClearIndex() http.HandlerFunc {
 		redir := r.Referer()
 		http.Redirect(w, r, redir, 307)
 
+	}
+}
+
+func (s *Server) handleReInstallSearchForm() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		params := r.URL.Query()
+		shop := params.Get("shop")
+		shopClient, _ := shopify.ShopClientConfig(shop, s.ClientsStore)
+
+		err := shopify.InstallSearchFormThemeAsset(shopClient)
+		if err != nil {
+			logger.Error(shop, err.Error())
+			s.SetFlashMessage(w, err.Error())
+		} else {
+			s.SetFlashMessage(w, "Re-installed Search Form on active theme.")
+		}
+
+		redir := r.Referer()
+		http.Redirect(w, r, redir, 307)
 	}
 }

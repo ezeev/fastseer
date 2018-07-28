@@ -35,7 +35,7 @@ func (s *Server) handleIndexShopifyCatalog() http.HandlerFunc {
 			fmt.Fprintf(w, "Error reading shopify client config")
 		}
 
-		pageSize := 3
+		pageSize := 10
 		count, err := shopify.GetNumProducts(shop.AuthResponse.AccessToken, shop.Shop)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -45,11 +45,12 @@ func (s *Server) handleIndexShopifyCatalog() http.HandlerFunc {
 		go func() {
 			// start the job
 			runningJobs.Store(shop.Shop, time.Now().Unix())
-			err := shopify.CrawlProducts(&shop, pageSize, "", s.Search)
+			err := shopify.CrawlProducts(&shop, pageSize, 0, s.Search)
 			if err != nil {
 				//logger.Error(shop.Shop, "handleIndexShopifyCatalog()")
 			}
 			time.Sleep(time.Second)
+
 			// remove job
 			runningJobs.Delete(shop.Shop)
 		}()
@@ -82,7 +83,16 @@ func (s *Server) handleClearShopifyCatalog() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 
+		// primary
 		err = s.Search.DeleteDocuments(shop.Shop, shop.IndexAddress, "*:*")
+		if err != nil {
+			logger.Error(shop.Shop, err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "Error clearing index: "+err.Error())
+		}
+
+		// type ahead
+		err = s.Search.DeleteDocuments(shop.Shop+"_typeahead", shop.IndexAddress, "*:*")
 		if err != nil {
 			logger.Error(shop.Shop, err.Error())
 			w.WriteHeader(http.StatusInternalServerError)

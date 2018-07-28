@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	ServerPort                  int               `yaml:"serverPort"`
+	AppDomain                   string            `yaml:"appDomain"`
 	ShopifyApiKey               string            `yaml:"shopifyApiKey"`
 	ShopifyApiSecret            string            `yaml:"shopifyApiSecret"`
 	DbOptions                   map[string]string `yaml:"dbOptions"`
@@ -17,6 +18,7 @@ type Config struct {
 	IndexingWorkerEndpoint      string            `yaml:"indexingWorkerEndpoint"`
 	IndexingWorkerStatsEndpoint string            `yaml:"indexingWorkerStatsEndpoint"`
 	SearchImpl                  string            `yaml:"searchImpl"`
+	JwtSecret                   string            `yaml:"jwtSecret"`
 }
 
 func LoadConfigFromFile(path string) *Config {
