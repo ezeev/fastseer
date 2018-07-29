@@ -9,6 +9,10 @@ const routeShopifyBuildIndex = "/shopify/buildIndex"
 const routeShopifyClearIndex = "/shopify/clearIndex"
 const routeShopifyShopJs = "/shopify/shop.js"
 const routeShopifyReInstallSearchForm = "/shopify/reinstallSearchForm"
+const routeShopifyUpdateSearchConfig = "/shopify/updateSearchConfig"
+
+//handleUpdateSearchConfig
+
 const routeSearchTypeAhead = "/search/typeahead"
 const routeSearchTypeAheadTopSearches = "/search/typeahead/topsearches"
 
@@ -20,6 +24,7 @@ func (s *Server) Routes() {
 	s.Router.HandleFunc(routeShopifyBuildIndex, s.authorizeShopifyHandler(s.handleBuildIndex()))
 	s.Router.HandleFunc(routeShopifyClearIndex, s.authorizeShopifyHandler(s.handleClearIndex()))
 	s.Router.HandleFunc(routeShopifyReInstallSearchForm, s.authorizeShopifyHandler(s.handleReInstallSearchForm()))
+	s.Router.HandleFunc(routeShopifyUpdateSearchConfig, s.authorizeShopifyHandler(s.handleUpdateSearchConfig()))
 
 	// front-end handlers
 	s.Router.HandleFunc(routeShopifyShopJs, s.handleShopifyJs())

@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/schema"
+
 	"github.com/ezeev/fastseer/logger"
 
 	"github.com/ezeev/fastseer/shopify"
@@ -180,5 +182,57 @@ func (s *Server) handleReInstallSearchForm() http.HandlerFunc {
 
 		redir := r.Referer()
 		http.Redirect(w, r, redir, 307)
+	}
+}
+
+func (s *Server) handleUpdateSearchConfig() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		params := r.URL.Query()
+		shop := params.Get("shop")
+
+		//remove auth params
+		/*params.Del("locale")
+		params.Del("hmac")
+		params.Del("timestamp")
+		params.Del("shop")*/
+
+		conf := new(shopify.ShopifySearchConfig)
+		decoder := schema.NewDecoder()
+		decoder.IgnoreUnknownKeys(true)
+
+		err := decoder.Decode(conf, params)
+		if err != nil {
+			logger.Error(shop, err.Error())
+		}
+
+		// fields not currently set by the form:
+		conf.Name = "Default Search Config"
+		conf.IsActive = true
+
+		//update shop conf
+		var shopConf shopify.ShopifyClientConfig
+		err = s.ClientsStore.Get(shop, &shopConf)
+		if err != nil {
+			logger.Error(shop, err.Error())
+		}
+		//only one config for now
+		shopConf.SearchConfigs = make([]*shopify.ShopifySearchConfig, 1)
+		shopConf.SearchConfigs[0] = conf
+
+		// save
+		err = s.ClientsStore.Put(shop, shopConf)
+		if err != nil {
+			logger.Error(shop, err.Error())
+		}
+
+		// clear cache
+		shopConfigCache.Delete(shop)
+
+		s.SetFlashMessage(w, "Updated Search Config")
+
+		redir := r.Referer()
+		http.Redirect(w, r, redir, 307)
+
 	}
 }

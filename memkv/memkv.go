@@ -33,6 +33,12 @@ func New(ln int, maxTTL int) (m *MemKV) {
 	return
 }
 
+func (m *MemKV) Delete(key string) {
+	m.l.Lock()
+	delete(m.m, key)
+	m.l.Unlock()
+}
+
 func (m *MemKV) Len() int {
 	return len(m.m)
 }

@@ -2,7 +2,6 @@ package fastseer
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -105,15 +104,24 @@ func (s *Server) handleTypeAheadTopSearches() http.HandlerFunc {
 
 		doc1 := solrg.SolrSearchDocument{}
 		doc1["search_txt"] = "ipad"
-		doc1["types_ss"] = []string{"Tech Accessories", "Tablets"}
+		//doc1["type_s"] = "*"
 
 		doc2 := solrg.SolrSearchDocument{}
-		doc2["search_txt"] = "iphone"
-		doc2["types_ss"] = []string{"Tech Accessories", "Phones"}
+		doc2["search_txt"] = "ipad"
+		doc2["type_s"] = "Tech Accessories"
 
-		fmt.Println(doc2)
+		doc3 := solrg.SolrSearchDocument{}
+		doc3["search_txt"] = "iphone"
+		//doc3["type_s"] = "*"
 
-		docs = append(docs, doc1, doc2)
+		doc4 := solrg.SolrSearchDocument{}
+		doc4["search_txt"] = "iphone"
+		doc4["type_s"] = "Tech Accessories"
+		//doc4["types_s"] = "Tech Accessories"
+
+		//doc2["types_ss"] = []string{"Tech Accessories", "Phones"}
+
+		docs = append(docs, doc1, doc2, doc3, doc4)
 		json.NewEncoder(w).Encode(docs)
 
 	}

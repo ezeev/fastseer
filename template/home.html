@@ -15,14 +15,6 @@
               //icon: 'http://localhost:3001/assets/header-icon.png',
               title: 'Configuration',
               buttons: {
-                primary: {
-                  label: 'Save',
-                  message: 'save',
-                  callback: function(){
-                    ShopifyApp.Bar.loadingOn();
-                    doSomeCustomAction();
-                  }
-                }
               }
             });
           });
@@ -106,13 +98,38 @@
       
         </div> <!-- end col -->
       </div> <!-- end row -->
-        
+
+      <div class="row" style="padding: 10px;">
+        <div class="col">
+          <h4>Search Settings</h4>
+        </div>
+      </div>
+
+      <div class="row"> <!-- start row -->
+        <div class="col-md-1"></div>
+        <div class="col-md-11"> <!-- start col -->
+          
+          {{ range .ShopConfig.SearchConfigs }}
+          <form action="/shopify/updateSearchConfig" style="display: inline;" method="GET">
+            <input type="hidden" name="shop" value="{{ $.Shop }}" />
+            <input type="hidden" name="hmac" value="{{ $.HMac }}" />
+            <input type="hidden" name="timestamp" value="{{ $.Timestamp }}" />
+            <input type="hidden" name="locale" value="{{ $.Locale }}" />
+
+            Include Product Suggestions: 
+            <input type="checkbox" 
+              name="IncludeProductSuggestions"
+              {{ if .IncludeProductSuggesitons }}
+                checked=true
+              {{ end }}
+              value=true><br/>
+            <button class="ui-button btn-primary" type="submit">Save</button>
+          </form>
+          {{ end }}
+      </div> <!-- end col -->
+    </div> <!-- end row -->
+         
 
       </div> <!-- end container -->
-
- 
-
-
-    </body>
 
 </html>

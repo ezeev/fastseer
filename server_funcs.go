@@ -15,7 +15,7 @@ var shopConfigCache *memkv.MemKV
 
 func init() {
 
-	shopConfigCache = memkv.New(100, 100)
+	shopConfigCache = memkv.New(100, 60)
 
 }
 
