@@ -4,7 +4,10 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
+
+	"github.com/gorilla/handlers"
 
 	"github.com/ezeev/fastseer/logger"
 	"github.com/ezeev/fastseer/search"
@@ -54,8 +57,10 @@ func NewServer(confPath string) (*Server, error) {
 
 	s.Routes()
 
+	loggedRouter := handlers.LoggingHandler(os.Stdout, s.Router)
+
 	s.HttpServer = &http.Server{
-		Handler:      s.Router,
+		Handler:      loggedRouter,
 		Addr:         fmt.Sprintf("127.0.0.1:%d", s.Port),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

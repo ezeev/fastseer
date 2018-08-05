@@ -6,13 +6,28 @@ import (
 	"net/http"
 
 	"github.com/ezeev/fastseer/shopify"
+	"github.com/prometheus/client_golang/prometheus"
 )
+
+var (
+	counterClientJs = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "fs_client_js_request_count",
+			Help: "The total number of times a client requested shop js",
+		}, []string{"shop"})
+)
+
+func init() {
+	prometheus.MustRegister(counterClientJs)
+}
 
 func (s *Server) handleShopifyJs() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		params := r.URL.Query()
 		shop := params.Get("shop")
+
+		counterClientJs.WithLabelValues(shop).Inc()
 
 		conf := s.CachedShopConfig(shop)
 

@@ -1,0 +1,39 @@
+{{define "head-includes"}}
+
+<script src="https://cdn.shopify.com/s/assets/external/app.js"></script>
+<script type="text/javascript">
+  ShopifyApp.init({
+    apiKey: '{{ .Config.ShopifyApiKey }}',
+    shopOrigin: 'https://{{ .Shop }}'
+  });
+</script>
+
+<script type="text/javascript">
+  ShopifyApp.ready(function(){
+
+
+    ShopifyApp.Bar.initialize({
+      //icon: 'http://localhost:3001/assets/header-icon.png',
+      title: 'Configuration',
+      buttons: {
+      }
+    });
+  });
+  
+  {{ if .FlashMessage }}
+    ShopifyApp.flashNotice("{{ .FlashMessage }}");
+  {{ end }}
+
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/semantic.min.css" integrity="sha256-ncjDAd2/rm/vaNTqp7Kk96MfSeHACtbiDU9NWKqNuCI=" crossorigin="anonymous" />
+<!--link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/components/statistic.min.css" integrity="sha256-x1VokpUC44OJRJpmYwZho1ZCURCDE5hktAYFv3Rdbok=" crossorigin="anonymous" /-->
+<script
+    src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/semantic.min.js" integrity="sha256-0gIvTkdsp0OOeV8tx3UTdi3ehppGwZbzQMvZJYhbzsE=" crossorigin="anonymous" ></script>
+
+
+
+{{end}}

@@ -41,6 +41,18 @@ func (s *Server) handleShopifyCallback() http.HandlerFunc {
 			IndexAddress: s.Config.DefaultIndexAddress,
 			AuthResponse: tokenResp,
 		}
+
+		// add default search config
+		searchConf := &shopify.ShopifySearchConfig{
+			Name:                      "Default",
+			SearchLocale:              params.Get("locale"),
+			IncludeProductSuggesitons: true,
+		}
+		client.SearchConfigAlloc = make([]float32, 1)
+		client.SearchConfigAlloc[0] = 100.0
+		client.SearchConfigs = make([]*shopify.ShopifySearchConfig, 1)
+		client.SearchConfigs[0] = searchConf
+
 		err := s.ClientsStore.Put(shop, client)
 		if err != nil {
 			logger.Error(shop, err.Error())

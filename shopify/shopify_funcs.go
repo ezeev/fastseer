@@ -37,6 +37,7 @@ func httpClient(token string, shop string, method string, endPoint string, payLo
 
 func CreateClientCollections(searchEngine search.SearchEngine, searchAddr string, shop string) {
 	collectionOpts := map[string]string{"numShards": "1", "replicationFactor": "1"}
+
 	searchEngine.CreateIndex(shop, searchAddr, collectionOpts)
 
 	time.Sleep(time.Second * 3)
@@ -46,6 +47,10 @@ func CreateClientCollections(searchEngine search.SearchEngine, searchAddr string
 	time.Sleep(time.Second * 3)
 
 	searchEngine.CreateIndex(shop+"_typeahead", searchAddr, collectionOpts)
+
+	time.Sleep(time.Second * 3)
+
+	searchEngine.CreateIndex(shop+"_rules", searchAddr, collectionOpts)
 
 	time.Sleep(time.Second * 3)
 }

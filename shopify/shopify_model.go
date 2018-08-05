@@ -41,16 +41,26 @@ type ShopifyPostScriptTagResponse struct {
 }
 
 type ShopifyClientConfig struct {
-	Shop          string                 `json:"shop"`
-	IndexAddress  string                 `json:"indexAddress"`
-	AuthResponse  ShopifyAuthResponse    `json:"shopifyAuthResponse"`
-	SearchConfigs []*ShopifySearchConfig `json:"shopifySearchConfigs"`
+	Shop              string                 `json:"shop"`
+	IndexAddress      string                 `json:"indexAddress"`
+	AuthResponse      ShopifyAuthResponse    `json:"shopifyAuthResponse"`
+	SearchConfigs     []*ShopifySearchConfig `json:"shopifySearchConfigs"`
+	SearchConfigAlloc []float32              `json:"searchConfigAlloc" schema:"SearchConfigAlloc"`
 }
 
 type ShopifySearchConfig struct {
 	Name                      string `json:"name" schema:"Name"`
-	IsActive                  bool   `json:"isActive" schema:"IsActive"`
+	SearchLocale              string `json:"searchLocale" schema:"SearchLocale"`
 	IncludeProductSuggesitons bool   `json:"includeProductSuggesitons" schema:"IncludeProductSuggestions"`
+}
+
+func NewDefaultSearchConfig() *ShopifySearchConfig {
+	conf := &ShopifySearchConfig{
+		Name:                      "Default Search Config",
+		SearchLocale:              "en",
+		IncludeProductSuggesitons: true,
+	}
+	return conf
 }
 
 type ShopifyApiProductsResponse struct {

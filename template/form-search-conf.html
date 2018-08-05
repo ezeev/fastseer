@@ -1,0 +1,63 @@
+
+{{define "layout"}}
+<html>
+
+        <head>
+            {{template "head-includes"}}
+          </head>
+    
+        <body>
+
+          
+            <div class="ui segments">
+              <div class="ui segment">
+                <div class="ui segment">
+                    <form id="myForm" action="/shopify/updateSearchConfig" style="display: inline;" method="GET">
+                      {{ .HMacAuth.HiddenFormFields }}
+
+                      <div class="ui two column grid">
+                        <div class="row">
+                            <div class="column right aligned" style="margin: auto;">Name</div>
+                            <div class="column ui input"><input type="text" name="Name" value="{{ .SearchConfig.Name }}"></div>
+                        </div>
+                        <div class="row">
+                          <div class="column right aligned" style="margin: auto;">Include Product Suggestions: </div>
+                          <div class="column ui checkbox">
+                              <input id="ipc" type="checkbox" 
+                              name="IncludeProductSuggestions"
+                              {{ if .SearchConfig.IncludeProductSuggesitons }}
+                                checked=true
+                              {{ end }}
+                              value=true>
+                              <label for="ipc">Make my profile visible</label>
+                          </div>
+                        </div>
+                        <div class="row">
+                            <div class="column right aligned" style="margin: auto;">Locale</div>
+                            <div class="column"> 
+                              <select class="ui dropdown" name="SearchLocale">
+                                <option value="en" {{if eq .SearchConfig.SearchLocale "en" }} selected=true {{end}}>English (en)</option>
+                                <option value="es" {{if eq .SearchConfig.SearchLocale "es" }} selected=true {{end}}>Spanish (es)</option>
+                              </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                          <div class="column"><button class="ui primary button" type="submit" name="sendForm">Save</button></div>
+                          <div class="column"></div>
+                        </div>
+                      </div>
+                      <input type="hidden" name="index" value="{{.Index}}">
+                    </form>
+                </div>
+              </div>
+            </div>
+    <script type="text/javascript">
+      $( document ).ready(function() {
+        $('select').dropdown();
+      });
+    </script>
+
+  </body>
+
+</html>
+{{end}}

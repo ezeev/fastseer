@@ -41,7 +41,7 @@ func TestCrawlProducts(t *testing.T) {
 	shop := testShopifyConfig()
 	b, _ := json.Marshal(shop)
 	t.Log(string(b))
-	CrawlProducts(shop, 3, "", nil)
+	CrawlProducts(shop, 3, 0, nil)
 }
 
 func TestGetScriptTags(t *testing.T) {
@@ -51,6 +51,7 @@ func TestGetScriptTags(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	t.Log(resp)
 
 }

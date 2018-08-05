@@ -1,0 +1,152 @@
+{{ define "layout"}}
+<html>
+
+    <head>
+      {{ template "head-includes"}}
+   </head>
+
+    <body>
+      <div class="ui container">
+        <div class="ui container">
+          <div class="ui segments">
+            <!-- MESSAGES -->
+            {{if .Error}}
+              <div class="ui segment">
+                <div class="ui ignored warning message">
+                  {{.Error}}
+                </div>
+              </div>
+            {{end}}
+
+            <!-- END MESSAGES-->
+            <!-- INDEXING -->
+            <div class="ui segment">
+                <h3>Indexing</h3> 
+              <div class="ui attached segment">
+                  <p><i>Build your index if you've made changes to your catalog</i></p>
+                  <div class="ui grid">
+                      <div class="row centered">
+                        <div class="six wide column centered">
+                          <div class="ui statistic">
+                            <div class="value">
+                                {{.NumProducts }}
+                            </div>
+                            <div class="label">
+                              Products
+                            </div>
+                          </div>
+                        </div>
+                        <div class="six wide column">
+                          <div class="ui statistic">
+                              <div class="value">
+                                  {{.NumVariants }}
+                              </div>
+                              <div class="label">
+                                Variants
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="ui inverted small two bottom attached buttons">
+                  <div class="ui primary button" onclick="goToPath('/shopify/buildIndex?shopify=true');">Build</div>
+                  <div class="ui secondary button" onclick="goToPath('/shopify/clearIndex?shopify=true');">Clear</div>
+              </div>
+            </div>
+            <!-- END INDEXING-->
+
+            <!-- SEARCH CONFIGURATION -->
+            <div class="ui segment">
+                <h3>Search Configuration</h3>
+                <form action="/shopify/forms/updateSearchAllocation">
+                  {{ .HmacAuth.HiddenFormFields }}
+                <div class="ui attached segment">  
+                  <p><i>Set up your settings for search</i></p>
+                  <!-- conf table--> 
+                  <table width="100%" class="ui celled table">
+                    <thead>
+                      <tr>
+                        <td>Name/Label</td>
+                        <td>Traffic %</td>
+                        <td>Action</td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {{ range $i, $e := .ShopConfig.SearchConfigs }}
+                      <tr>
+                        
+                        <td><a href="#" onclick="openModal('/shopify/forms/searchConf?confIdx={{ $i }}','Editing {{.Name}}');return false;">{{.Name}}</a></td>
+                        <td><input type="text" size="3" maxlength="3" name="SearchConfigAlloc" value="{{ index $.ShopConfig.SearchConfigAlloc $i }}" >%</td>
+                        <td><a href="#" onclick="goToPath('/shopify/forms/cloneSearchConf?index={{$i}}');">Clone</a></td>
+                      </tr>
+                    {{ end }}
+                  </tbody>
+                  </table>
+                </div>
+                <div class="ui small one bottom attached buttons">
+                    <button class="ui primary button" type="submit" name="button">Update Allocations</button>
+                    <!--div class="ui blue button" onclick="goToPath('/shopify/reinstallSearchForm?shopify=true');">Install</div-->
+                </div>
+                </form>
+            </div>
+            <!-- END SEARCH CONFIGURATION -->
+
+            <!-- THEME ASSETS -->
+            <div class="ui segment">
+                <h3>Theme Assets</h3> 
+                <div class="ui attached segment">
+                  <i>Click this button if you've installed a new theme or wish to reset FastSeer's theme
+                    assets to their original states.</i>
+                  </i>
+                </div>
+                <div class="ui one bottom attached buttons">
+                    <div class="ui primary button" onclick="goToPath('/shopify/reinstallSearchForm?shopify=true');">Install</div>
+                </div>
+            </div>
+            <!-- END THEME ASSETS -->
+
+
+          </div>
+        </div>
+      </div>
+
+<script lang="javascript">
+
+function goToPath(path) {
+  //alert({{.Config.AppDomain}} + path + '&' + '{{.HmacAuth.QueryString}}');
+  //window.location.href = '{{.Config.AppDomain}}' + path + '&' + '{{.HmacAuth.QueryString}}';
+  window.location.replace('{{.Config.AppDomain}}' + path + '&' + '{{.HmacAuth.QueryString}}');
+}
+
+
+function openModal(path, title) {
+  ShopifyApp.Modal.open({
+    src: '{{.Config.AppDomain}}' + path + '&' + '{{.HmacAuth.QueryString}}',
+    title: title,
+    width: 'small',
+    height: 300,
+    buttons: {
+      /*primary: { label: "Done", callback: function(label) {
+        ShopifyApp.Modal.close(); 
+        //refresh
+        location.reload()
+       },*/
+      secondary: [
+        { 
+          label: "Close", callback: function (label) { 
+            ShopifyApp.Modal.close(); 
+            //refresh
+            location.reload()
+          } 
+        }
+      ]
+  }
+  }, function(result, data){
+    //alert("result: " + result + "   data: " + data);
+  });
+}
+</script>
+
+</html>
+{{end}}

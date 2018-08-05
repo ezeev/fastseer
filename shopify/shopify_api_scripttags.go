@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strconv"
+	"strings"
 )
 
 func jsSrc(shop string, appDomain string) string {
@@ -17,7 +18,7 @@ func GetScriptTagsBySrc(shop *ShopifyClientConfig, appDomain string) (*ShopifySc
 
 	params := req.URL.Query()
 	//params.Set("src", "https://b76cf0eb.ngrok.io/shopify/shop.js?shop=fastseer-staging.myshopify.com")
-	params.Set("src", jsSrc(shop.Shop, appDomain))
+	//params.Set("src", jsSrc(shop.Shop, appDomain))
 	req.URL.RawQuery = params.Encode()
 	resp, err := cli.Do(req)
 	if err != nil {
@@ -41,9 +42,12 @@ func InstallShopScriptTag(shop *ShopifyClientConfig, appDomain string) (*Shopify
 
 	// Step 2, delete any matching script tags (we want to replace)
 	for _, v := range tags.ScriptTags {
-		err := DeleteScriptTag(shop, v.ID)
-		if err != nil {
-			return nil, err
+
+		if strings.Contains(v.Src, "shopify/shop.js") {
+			err := DeleteScriptTag(shop, v.ID)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 

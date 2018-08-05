@@ -2,35 +2,67 @@ package fastseer
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/ezeev/fastseer/logger"
 	"github.com/ezeev/fastseer/memkv"
 	"github.com/ezeev/fastseer/shopify"
+	"github.com/gorilla/sessions"
 )
 
+const sessionName = "fastseer-admin-session"
 const flashMessageCookieID = "msg"
+const flashErrorCookieID = "errorMsg"
 
 var shopConfigCache *memkv.MemKV
 
 func init() {
-
 	shopConfigCache = memkv.New(100, 60)
-
 }
 
-func (s *Server) SetFlashMessage(w http.ResponseWriter, msg string) {
-	exp := time.Now().Add(time.Second * 3)
+var store = sessions.NewCookieStore([]byte("something-very-secret"))
+
+func (s *Server) SetFlashMessage(w http.ResponseWriter, r *http.Request, msg string) {
+	/*exp := time.Now().Add(time.Second * 5)
 	cookie := http.Cookie{Name: flashMessageCookieID, Value: msg, Expires: exp}
-	http.SetCookie(w, &cookie)
+	http.SetCookie(w, &cookie)*/
+	session, _ := store.Get(r, sessionName)
+	session.Values[flashMessageCookieID] = msg
+	session.Save(r, w)
 }
 
-func (s *Server) FlashMessage(r *http.Request) string {
-	cookie, _ := r.Cookie(flashMessageCookieID)
-	if cookie != nil {
-		return cookie.Value
+func (s *Server) FlashMessage(w http.ResponseWriter, r *http.Request) string {
+	session, _ := store.Get(r, sessionName)
+	msg := ""
+	if session.Values[flashMessageCookieID] != nil {
+		msg = session.Values[flashMessageCookieID].(string)
+		// delete it
+		session.Values[flashMessageCookieID] = nil
+		session.Save(r, w)
 	}
-	return ""
+	return msg
+}
+
+func (s *Server) SetFlashError(w http.ResponseWriter, r *http.Request, msg string) {
+	session, _ := store.Get(r, sessionName)
+	session.Values[flashErrorCookieID] = msg
+	session.Save(r, w)
+}
+
+func (s *Server) FlashError(w http.ResponseWriter, r *http.Request) string {
+	session, _ := store.Get(r, sessionName)
+	msg := ""
+	if session.Values[flashErrorCookieID] != nil {
+		msg = session.Values[flashErrorCookieID].(string)
+		// delete it
+		session.Values[flashErrorCookieID] = nil
+		session.Save(r, w)
+	}
+	return msg
+}
+
+func (s *Server) RedirectToHome(w http.ResponseWriter, r *http.Request) {
+	redir := s.Config.AppDomain + routeShopifyHome + "?" + NewHmacAuthFromParams(r.URL.Query()).QueryString()
+	http.Redirect(w, r, redir, 307)
 }
 
 func (s *Server) CachedShopConfig(shop string) *shopify.ShopifyClientConfig {

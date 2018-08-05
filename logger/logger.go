@@ -4,7 +4,21 @@ import (
 	"fmt"
 	"log"
 	"runtime"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
+
+var (
+	totalErrors = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "fs_errors_total",
+			Help: "The total number of times an error was logged",
+		}, []string{"shop"})
+)
+
+func init() {
+	prometheus.MustRegister(totalErrors)
+}
 
 func Info(shop string, message string) {
 	log.Printf("INFO - Shop: %s, message: %s", shop, message)
@@ -22,6 +36,7 @@ func Error(shop string, message string) {
 	frames := runtime.CallersFrames(pc[:n])
 	frame, _ := frames.Next()
 	fmt.Printf("\t TRACE: %s,:%d %s\n", frame.File, frame.Line, frame.Function)
+	totalErrors.WithLabelValues(shop).Inc()
 }
 
 func Trace(shop string, message string) {
