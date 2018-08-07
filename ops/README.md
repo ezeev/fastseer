@@ -32,15 +32,8 @@ spec:
 
 # Networking
 
-In the cluster-proxy directory that contains all of the resources for an nginx service. It is exposed as a LoadBalancer. The nginx service serves as a router to other services in the cluster. Rather than go through the hassle of configuring letsencrypt, I opted to use Cloudflare. Following their steps was very simple. I just had to change the Nameservers at my registrar (Namecheap.com). A major bonus of Cloudflare is that it looks like you can setup as many CNAME records as you want. I have app.fastseer.com point to the app. I plan on having the public site go to fastseer.com. 
+In the cluster-proxy directory that contains all of the resources for an nginx service. It is exposed as a LoadBalancer. The nginx service serves as a router to other services in the cluster. Rather than go through the hassle of configuring letsencrypt, I opted to use Cloudflare. Following their steps was very simple. I just had to change the Nameservers at my registrar (Namecheap.com). A major bonus of Cloudflare is that it looks like you can setup as many CNAME records as you want. I have shopify-app.fastseer.com point to the app. I plan on having the public site go to fastseer.com. 
 
-# Static File Hosting
-
-See https://github.com/ezeev/fastseer/issues/17 for details
-
-- Added S3 static site for React app (http://fastseer-static.s3-website-us-west-2.amazonaws.com/)
-- Added NGINX route point to S3 site
-- Added Cloudflare CNAME ((https://shopify-app.fastseer.com/))
 
 # Development Workflow
 
