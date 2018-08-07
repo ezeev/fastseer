@@ -55,6 +55,20 @@ func (s *SolrSearch) DeleteIndex(name string, address string) error {
 	return err
 }
 
+func (s *SolrSearch) IndexStruct(indexName string, solrUrl string, data interface{}) error {
+
+	cli, err := solrg.NewDirectSolrClient(solrUrl)
+	if err != nil {
+		return err
+	}
+	err = cli.PostStruct(data, indexName)
+	if err != nil {
+		return err
+	}
+	cli.Commit(indexName)
+	return nil
+}
+
 func (s *SolrSearch) IndexDocuments(indexName string, solrUrl string, docs interface{}) error {
 
 	if solrDocs, ok := docs.(*solrg.SolrDocumentCollection); ok {

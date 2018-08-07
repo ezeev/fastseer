@@ -5,7 +5,7 @@ import (
 )
 
 func TestLoadConfig(t *testing.T) {
-	conf := LoadConfigFromFile("config.yaml")
+	conf := LoadConfigFromFile("config-stage.yaml")
 	if conf.ShopifyApiKey == "" || conf.ShopifyApiSecret == "" {
 		t.Error("Shopify Api Key or Secret wasn't parsed from conf file")
 	}

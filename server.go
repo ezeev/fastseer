@@ -61,7 +61,7 @@ func NewServer(confPath string) (*Server, error) {
 
 	s.HttpServer = &http.Server{
 		Handler:      loggedRouter,
-		Addr:         fmt.Sprintf("127.0.0.1:%d", s.Port),
+		Addr:         fmt.Sprintf(":%d", s.Port),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

@@ -59,7 +59,7 @@ func (s *Server) handleShopifyCallback() http.HandlerFunc {
 		}
 
 		// install Javascript on the shop's site
-		resp, err := shopify.InstallShopScriptTag(&client, s.Config.AppDomain)
+		resp, err := shopify.InstallShopScriptTag(&client, s.AppDomain(r)) //s.Config.AppDomain)
 		if err != nil {
 			logger.Error(shop, err.Error())
 		}

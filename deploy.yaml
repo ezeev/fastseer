@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: fastseer
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: fastseer
+    spec:
+      containers:
+      - name: fastseer
+        image: ezeev/fastseer:v2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8082
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+      imagePullSecrets:
+        - name: fastseer-docker-repo-key            

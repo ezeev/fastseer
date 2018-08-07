@@ -22,6 +22,7 @@ class App extends Component {
 	  timestamp := params.Get("timestamp")
     */
     var urlParams = new URLSearchParams(window.location.search);
+    //var appDomain = "https://api.fastseer.com"; //default to public api
     var appDomain = "";
     if (urlParams.has("appDomain")) {
         appDomain = urlParams.get("appDomain");

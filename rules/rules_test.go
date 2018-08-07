@@ -45,14 +45,73 @@ func TestQueryRule(t *testing.T) {
 		Q: "test rule",
 	}
 
-	q := QueryMatchRule{}
+	q := SolrQueryRule{}
 	q.MatchQueryTriggers = append(q.MatchQueryTriggers, "test rule")
 	q.ActReplaceQuery = "replaced!"
 	q.ActAddFqs = []string{"cat:001", "cat:002"}
 	q.ActAddBqs = []string{"sku:001^0.5", "sku:002^6.5"}
 
-	q.Execute(params)
+	q.Prepare(params)
+
+	q.Execute()
 
 	t.Log(params)
+}
 
+func TestSolrQueryRule(t *testing.T) {
+	params := &solrg.SolrParams{
+		Q:  "this won't match",
+		Fq: []string{"cat:001"},
+	}
+	ProcessSolrRules(params)
+	t.Log(params)
+}
+
+func BenchmarkSolrRuleQuery(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		params := &solrg.SolrParams{
+			Q: "test rule",
+		}
+		ProcessSolrRules(params)
+	}
+}
+
+func TestContainsAnyRule(t *testing.T) {
+	params := &solrg.SolrParams{
+		Q: "test rule",
+	}
+
+	q := SolrQueryRule{}
+	q.ContainsAnyQueryTriggers = []string{"test"}
+	q.ActAddBqs = []string{"sku:001^0.9"}
+	q.Prepare(params)
+	q.Execute()
+	t.Log(params)
+}
+
+func BenchmarkAnyRulePrepare(b *testing.B) {
+
+	q := SolrQueryRule{}
+	//241 ns/op
+
+	q.ContainsAnyQueryTriggers = []string{"test", "six", "seven", "eight"}
+	//634 ns/op
+
+	q.MatchQueryTriggers = []string{"test rule one two three four five"}
+	//781 ns/op
+
+	q.ActAddBqs = []string{"sku:001^0.9"}
+	//925 ns/op
+	q.ActAddFqs = []string{"fq1:123", "fq2:234", "fq:345"}
+	//1278 ns/op
+
+	for n := 0; n < b.N; n++ {
+		params := &solrg.SolrParams{
+			Q: "test rule one two three four five",
+		}
+
+		q.Prepare(params)
+		q.Execute()
+		//t.Log(params)
+	}
 }

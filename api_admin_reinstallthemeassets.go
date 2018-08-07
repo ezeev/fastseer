@@ -22,7 +22,7 @@ func (s *Server) apiHandleReinstallThemeAssets() http.HandlerFunc {
 		}
 
 		// re-install script tag
-		_, err = shopify.InstallShopScriptTag(shopClient, s.Config.AppDomain)
+		_, err = shopify.InstallShopScriptTag(shopClient, s.AppDomain(r))
 		if err != nil {
 			logger.Error(shop, err.Error())
 			SendErrorResponse(w, r, "Unable to reinstall assets!", err)

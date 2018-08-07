@@ -103,7 +103,7 @@ class SearchConfigGrid extends React.Component {
 
     postConfig = () => {
         this.setState({loading: true})
-        fetch(this.props.appDomain + "/api/v1/shop/config?" + window.authQueryString(), {
+        fetch(this.props.appDomain + "/api/v1/shop/config?" + window.authQueryString(this.props), {
             method: 'POST', // or 'PUT'
             body: JSON.stringify(this.state.shopConfig), // data can be `string` or {object}!
             headers:{

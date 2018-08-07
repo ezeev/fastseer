@@ -7,8 +7,8 @@ import (
 )
 
 type Config struct {
-	ServerPort                  int               `yaml:"serverPort"`
-	AppDomain                   string            `yaml:"appDomain"`
+	ServerPort int `yaml:"serverPort"`
+	//AppDomain                   string            `yaml:"appDomain"`
 	ShopifyApiKey               string            `yaml:"shopifyApiKey"`
 	ShopifyApiSecret            string            `yaml:"shopifyApiSecret"`
 	DbOptions                   map[string]string `yaml:"dbOptions"`

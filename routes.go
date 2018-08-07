@@ -8,21 +8,7 @@ import (
 
 const routePing = "/ping"
 const routeShopifyCallBack = "/shopify/callback"
-const routeShopifyHome = "/shopify"
-const routeShopifyBuildIndex = "/shopify/buildIndex"
-const routeShopifyClearIndex = "/shopify/clearIndex"
 const routeShopifyShopJs = "/shopify/shop.js"
-const routeShopifyReInstallSearchForm = "/shopify/reinstallSearchForm"
-const routeShopifyUpdateSearchConfig = "/shopify/updateSearchConfig"
-
-const routeShopifySearchConfForm = "/shopify/forms/searchConf"
-const routeShopifySearchConfAllocation = "/shopify/forms/updateSearchAllocation"
-
-//handleCloneSearchConfig()
-const routeShopifyCloneSearchConf = "/shopify/forms/cloneSearchConf"
-
-const routeSearchTypeAhead = "/search/typeahead"
-const routeSearchTypeAheadTopSearches = "/search/typeahead/topsearches"
 
 func (s *Server) Routes() {
 
@@ -37,19 +23,9 @@ func (s *Server) Routes() {
 	s.Router = mux.NewRouter()
 	s.Router.HandleFunc(routePing, s.handlePing())
 	s.Router.HandleFunc(routeShopifyCallBack, s.handleShopifyCallback())
-	s.Router.HandleFunc(routeShopifyHome, s.handleShopifyHome())
-	s.Router.HandleFunc(routeShopifyBuildIndex, s.authorizeShopifyHandler(s.handleBuildIndex()))
-	s.Router.HandleFunc(routeShopifyClearIndex, s.authorizeShopifyHandler(s.handleClearIndex()))
-	s.Router.HandleFunc(routeShopifyReInstallSearchForm, s.authorizeShopifyHandler(s.handleReInstallSearchForm()))
-	s.Router.HandleFunc(routeShopifyUpdateSearchConfig, s.authorizeShopifyHandler(s.handleUpdateSearchConfig()))
-	s.Router.HandleFunc(routeShopifySearchConfForm, s.handleSearchConfForm())
-	s.Router.HandleFunc(routeShopifySearchConfAllocation, s.authorizeShopifyHandler(s.handleUpdateSearchConfAllocation()))
-	s.Router.HandleFunc(routeShopifyCloneSearchConf, s.handleCloneSearchConfig())
 
 	// front-end handlers
 	s.Router.HandleFunc(routeShopifyShopJs, s.handleShopifyJs())
-	s.Router.HandleFunc(routeSearchTypeAhead, s.handleTypeAheadRequest())
-	s.Router.HandleFunc(routeSearchTypeAheadTopSearches, s.handleTypeAheadTopSearches())
 
 	s.ApiRoutes()
 
@@ -57,3 +33,26 @@ func (s *Server) Routes() {
 	s.Router.PathPrefix("/").Handler(http.FileServer(http.Dir("shopify-admin-ui/build/")))
 
 }
+
+// RETIRED
+
+//const routeShopifyHome = "/shopify"
+//const routeShopifyBuildIndex = "/shopify/buildIndex"
+//const routeShopifyClearIndex = "/shopify/clearIndex"
+//const routeShopifyReInstallSearchForm = "/shopify/reinstallSearchForm"
+//const routeShopifyUpdateSearchConfig = "/shopify/updateSearchConfig"
+
+//const routeShopifySearchConfForm = "/shopify/forms/searchConf"
+//const routeShopifySearchConfAllocation = "/shopify/forms/updateSearchAllocation"
+
+//handleCloneSearchConfig()
+//const routeShopifyCloneSearchConf = "/shopify/forms/cloneSearchConf"
+
+//s.Router.HandleFunc(routeShopifyHome, s.handleShopifyHome())
+//s.Router.HandleFunc(routeShopifyBuildIndex, s.authorizeShopifyHandler(s.handleBuildIndex()))
+//s.Router.HandleFunc(routeShopifyClearIndex, s.authorizeShopifyHandler(s.handleClearIndex()))
+//s.Router.HandleFunc(routeShopifyReInstallSearchForm, s.authorizeShopifyHandler(s.handleReInstallSearchForm()))
+//s.Router.HandleFunc(routeShopifyUpdateSearchConfig, s.authorizeShopifyHandler(s.handleUpdateSearchConfig()))
+//s.Router.HandleFunc(routeShopifySearchConfForm, s.handleSearchConfForm())
+//s.Router.HandleFunc(routeShopifySearchConfAllocation, s.authorizeShopifyHandler(s.handleUpdateSearchConfAllocation()))
+//s.Router.HandleFunc(routeShopifyCloneSearchConf, s.handleCloneSearchConfig())
