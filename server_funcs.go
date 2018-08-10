@@ -18,6 +18,7 @@ func init() {
 	shopConfigCache = memkv.New(100, 60)
 }
 
+// AppDomain can be used to build URLs for server side requests
 func (s *Server) AppDomain(r *http.Request) string {
 	return "https://" + r.Host
 }

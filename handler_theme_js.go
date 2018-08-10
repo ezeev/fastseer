@@ -23,7 +23,7 @@ func init() {
 	prometheus.MustRegister(counterClientJs)
 	pageFile := "template/shopify.js"
 	var err error
-	jsTemplate, err = template.New("shopify.js").Delims("[[", "]]").ParseFiles(pageFile)
+	jsTemplate, err = template.New("shopify.js").Delims("<<", ">>").ParseFiles(pageFile)
 	if err != nil {
 		log.Fatal("Couldn't load JS template!: Error: ", err.Error())
 	}
@@ -46,7 +46,8 @@ func (s *Server) handleShopifyJs() http.HandlerFunc {
 			Conf      shopify.ShopifySearchConfig
 		}
 
-		data := JsData{shop, s.AppDomain(r), *conf.SearchConfigs[0]}
+		data := JsData{shop, s.Config.ScriptTagDomain, *conf.SearchConfigs[0]}
+		//data := JsData{shop, s.Config.ScriptTagDomain, *conf.SearchConfigs[0]}
 
 		//tmpl, err := template.ParseFiles("template/shopify.js")
 		/*pageFile := "template/shopify.js"

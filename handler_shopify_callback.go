@@ -59,14 +59,14 @@ func (s *Server) handleShopifyCallback() http.HandlerFunc {
 		}
 
 		// install Javascript on the shop's site
-		resp, err := shopify.InstallShopScriptTag(&client, s.AppDomain(r)) //s.Config.AppDomain)
+		resp, err := shopify.InstallShopScriptTag(&client, s.Config.ScriptTagDomain) //s.Config.AppDomain)
 		if err != nil {
 			logger.Error(shop, err.Error())
 		}
 		logger.Info(shop, fmt.Sprintf("Created script tag id: %d", resp.ScriptTag.ID))
 
 		// install custom search form asset on the shop's site
-		err = shopify.InstallSearchFormThemeAsset(&client)
+		err = shopify.InstallSearchFormThemeAsset(&client, s.Config.ScriptTagDomain)
 		if err != nil {
 			logger.Error(shop, err.Error())
 		}

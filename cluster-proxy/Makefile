@@ -1,14 +1,14 @@
+VERSION=v3
+
 build:
-	@docker build -t ezeev/fastseer:proxy-v1 -f Dockerfile .
+	@docker build -t ezeev/fastseer:proxy-$(VERSION) -f Dockerfile .
+
 
 deploy:
-	docker push ezeev/fastseer:proxy-v1
-	kubectl delete -f deploy.yaml
-	kubectl create -f deploy.yaml
+	@docker build -t ezeev/fastseer:proxy-$(VERSION) -f Dockerfile .
+	@docker push ezeev/fastseer:proxy-$(VERSION)
+	kubectl set image deployment/nginx nginx=ezeev/fastseer:proxy-$(VERSION)
 
-replace:
-	kubectl delete -f deploy.yaml
-	kubectl create -f deploy.yaml
 
 expose:
 	kubectl expose deployment nginx --target-port=80 --type=LoadBalancer

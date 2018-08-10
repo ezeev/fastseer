@@ -61,10 +61,10 @@ func (s *Server) handleTypeAheadRequest() http.HandlerFunc {
 
 		solrParams := &solrg.SolrParams{
 			DefType: "edismax",
-			Qf:      "title_txt",
+			Qf:      "title_t",
 			Q:       query,
-			Fl:      "title_txt,img_s",
-			Rows:    "3",
+			Fl:      "name:title_t,image:img_s,key:id,price:from_price_f",
+			Rows:    "5",
 		}
 
 		//resp, err := s.Search.Query(shop+"_typeahead", "172.104.9.135:8983/solr", solrParams)
@@ -77,9 +77,10 @@ func (s *Server) handleTypeAheadRequest() http.HandlerFunc {
 
 		docs := solrResp.Response.Docs
 		//add doc for raw search
-		doc := solrg.SolrSearchDocument{}
-		doc["title_txt"] = []string{"Search for \"" + q + "\""}
-		docs = append(docs, doc)
+		/*doc := solrg.SolrSearchDocument{}
+		doc["name"] = []string{"Search for \"" + q + "\""}
+		doc["key"] = []string{"doSearch"}
+		docs = append(docs, doc)*/
 
 		json.NewEncoder(w).Encode(docs)
 	}

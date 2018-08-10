@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -78,8 +79,9 @@ func PostScriptTag(shop *ShopifyClientConfig, appDomain string) (*ShopifyPostScr
 				"src": "%s"
 			}
 		}`, jsSrc(shop.Shop, appDomain))
-	cli, req := httpClient(shop.AuthResponse.AccessToken, shop.Shop, "POST", "/admin/script_tags.json", bytes.NewBuffer([]byte(js)))
 
+	log.Println(js)
+	cli, req := httpClient(shop.AuthResponse.AccessToken, shop.Shop, "POST", "/admin/script_tags.json", bytes.NewBuffer([]byte(js)))
 	resp, err := cli.Do(req)
 	if err != nil {
 		return nil, err

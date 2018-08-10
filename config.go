@@ -11,6 +11,7 @@ type Config struct {
 	//AppDomain                   string            `yaml:"appDomain"`
 	ShopifyApiKey               string            `yaml:"shopifyApiKey"`
 	ShopifyApiSecret            string            `yaml:"shopifyApiSecret"`
+	ScriptTagDomain             string            `yaml:"scriptTagDomain"`
 	DbOptions                   map[string]string `yaml:"dbOptions"`
 	DbImpl                      string            `yaml:"dbImpl"`
 	DefaultIndexAddress         string            `yaml:"defaultIndexAddress"`

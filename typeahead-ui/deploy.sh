@@ -1,0 +1,1 @@
+s3cmd put --acl-public --guess-mime-type --recursive build/ s3://static.fastseer.com/

@@ -10,7 +10,7 @@ Initial Steps:
 
 - Follow the Containership steps to deploy a cluster on Digital Ocean - https://cloud.containership.io
 - Run create-*-secret.sh - this will create some secrets:
-    - `fastseer-docker-repo-key` - used for pulling images from the private repo
+    - `fastseer-docker-repo-key` - used for pulling docker images from the private docker hub repo
 
 Deployment Tips For New Containers:
 
@@ -32,7 +32,7 @@ spec:
 
 # Networking
 
-In the cluster-proxy directory that contains all of the resources for an nginx service. It is exposed as a LoadBalancer. The nginx service serves as a router to other services in the cluster. Rather than go through the hassle of configuring letsencrypt, I opted to use Cloudflare. Following their steps was very simple. I just had to change the Nameservers at my registrar (Namecheap.com). A major bonus of Cloudflare is that it looks like you can setup as many CNAME records as you want. I have shopify-app.fastseer.com point to the app. I plan on having the public site go to fastseer.com. 
+The cluster-proxy directory that contains all of the resources for an nginx service. It is exposed as a LoadBalancer. The nginx service serves as a router to other services in the cluster. Rather than go through the hassle of configuring letsencrypt, I opted to use Cloudflare. Following their steps was very simple. I just had to change the Nameservers at my registrar (Namecheap.com). A major bonus of Cloudflare is that it looks like you can setup as many CNAME records as you want. I have shopify-app.fastseer.com point to the app. I plan on having the public site go to fastseer.com. 
 
 
 # Development Workflow

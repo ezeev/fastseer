@@ -15,18 +15,19 @@ func (s *Server) apiHandleReinstallThemeAssets() http.HandlerFunc {
 		shop := params.Get("shop")
 		shopClient, _ := shopify.ShopClientConfig(shop, s.ClientsStore)
 
-		err := shopify.InstallSearchFormThemeAsset(shopClient)
+		err := shopify.InstallSearchFormThemeAsset(shopClient, s.Config.ScriptTagDomain)
 		if err != nil {
 			logger.Error(shop, err.Error())
 			SendErrorResponse(w, r, "Unable to reinstall assets!", err)
 		}
 
 		// re-install script tag
-		_, err = shopify.InstallShopScriptTag(shopClient, s.AppDomain(r))
+		/*_, err = shopify.InstallShopScriptTag(shopClient, s.Config.ScriptTagDomain)
+		//_, err = shopify.InstallShopScriptTag(shopClient, s.Config.ScriptTagDomain)
 		if err != nil {
 			logger.Error(shop, err.Error())
 			SendErrorResponse(w, r, "Unable to reinstall assets!", err)
-		}
+		}*/
 		json.NewEncoder(w).Encode(MessageResponse{Message: "Reinstalled Theme Assets"})
 	}
 }

@@ -27,7 +27,7 @@ const tagLimit = 10
 
 func httpClient(token string, shop string, method string, endPoint string, payLoad io.Reader) (*http.Client, *http.Request) {
 	var netClient = &http.Client{
-		Timeout: time.Second * 10,
+		Timeout: time.Second * 30,
 	}
 	req, _ := http.NewRequest(method, "https://"+shop+endPoint, payLoad)
 	req.Header.Add("X-Shopify-Access-Token", token)
@@ -84,6 +84,7 @@ func IndexProducts(productBatch *ShopifyApiProductsResponse, searchEngine search
 
 		productTitle := product.Title
 		productID := product.ID
+		idStr := strconv.Itoa(productID)
 		productType := product.ProductType
 		productTags := strings.Split(product.Tags, ", ")
 		if len(productTags) > tagLimit {
@@ -96,10 +97,11 @@ func IndexProducts(productBatch *ShopifyApiProductsResponse, searchEngine search
 		typeAheadDoc := solrg.NewSolrDocument("product-" + strconv.Itoa(productID))
 		typeAheadDoc.SetField("productType_s", []string{productType})
 		typeAheadDoc.SetField("type_s", []string{"product"})
-		typeAheadDoc.SetField("title_txt", []string{productTitle})
+		typeAheadDoc.SetField("id", []string{idStr})
+		typeAheadDoc.SetField("title_t", []string{productTitle})
 		typeAheadDoc.SetField("img_s", []string{productImage})
 
-		lowestPrice := 0.0
+		lowestPrice := 99999.99
 
 		// variants
 		for _, variant := range product.Variants {

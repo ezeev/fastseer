@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: nginx
 spec:
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: ezeev/fastseer:proxy-v1
+        image: ezeev/fastseer:proxy-v2
         imagePullPolicy: Always
         ports:
         - containerPort: 80

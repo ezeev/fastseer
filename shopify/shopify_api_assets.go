@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 )
 
-func InstallSearchFormThemeAsset(shop *ShopifyClientConfig) error {
+func InstallSearchFormThemeAsset(shop *ShopifyClientConfig, appDomain string) error {
 
 	//what is the active theme?
 	themes, err := GetThemes(shop)
@@ -16,7 +16,7 @@ func InstallSearchFormThemeAsset(shop *ShopifyClientConfig) error {
 	}
 	for _, v := range themes.Themes {
 		if v.Role == "main" {
-			err = PutSearchFormThemeAsset(shop, v.ID)
+			err = PutSearchFormThemeAsset(shop, v.ID, appDomain)
 			if err != nil {
 				return err
 			}
@@ -26,157 +26,109 @@ func InstallSearchFormThemeAsset(shop *ShopifyClientConfig) error {
 	return nil
 }
 
-func PutSearchFormThemeAsset(shop *ShopifyClientConfig, themeID int) error {
+func PutSearchFormThemeAsset(shop *ShopifyClientConfig, themeID int, appDomain string) error {
 
 	html := `
+		<!-- FAST SEER SEARCH FORM -->
+		<style>
+		.react-autosuggest__container {
+		position: relative;
+		}
 
-	<!-- FastSeer Typeahead Search -->
+		.react-autosuggest__input {
+		width: 240px;
+		height: 30px;
+		padding: 10px 20px;
+		font-family: 'Open Sans', sans-serif;
+		font-weight: 300;
+		font-size: 16px;
+		border: 1px solid #aaa;
+		border-radius: 4px;
+		-webkit-appearance: none;
+		}
 
-	<script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js" defer="defer"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js" defer="defer"></script>	
-	<style>
-	
-	.typeahead {
-		height:50px;
-	}
-		
-	
-	.ta-section-header{
-		background-color: #2471A3;
-		color:white;
-		width: 500px;
-		padding-left:5px;
-	}
-		
-	.ta-product {
-		width: 400px;
-		padding-top: 0px;
-		display: flex;
-		vertical-align: middle;
-		/*border: 1px solid #D4E6F1;*/
+		.react-autosuggest__input--focused {
+		outline: none;
+		}
+
+		.react-autosuggest__input::-ms-clear {
+		display: none;
+		}
+
+		.react-autosuggest__input--open {
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+		}
+
+		.react-autosuggest__suggestions-container {
+		display: none;
+		}
+
+		.react-autosuggest__suggestions-container--open {
+		display: block;
+		position: absolute;
+		top: 50px;
+		width: 280px;
+		border: 1px solid #aaa;
+		background-color: #fff;
+		font-family: 'Open Sans', sans-serif;
+		font-weight: 300;
+		font-size: 16px;
+		border-bottom-left-radius: 4px;
+		border-bottom-right-radius: 4px;
+		z-index: 2;
+		}
+
+		.react-autosuggest__suggestions-list {
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		}
+
+		.react-autosuggest__suggestion {
 		cursor: pointer;
-		
-	}
-	
-	/*div.tt-cursor.ta-item { 
-			background-color: yellow;
-	}*/
-	
-		
-	.tt-suggestion {
-		background-color: white;
-	}
-	.tt-suggestion.tt-cursor {
-		background-color:#EBF5FB;
-	}
-		
-	/*div.tt-cursor { 
-			background-color: yellow;
-	}*/
-	
-	.ta-item {
-		width: 400px;
-		padding-left: 10px;
-		cursor: pointer;
-	}
-	
-	.tt-dataset-shop-ta-products {
-		background-color: white;
-	}
-		
-	.ta-sub {
-		width: 400px;
-		padding-left: 10px;
-		cursor: pointer;
-	}
-		
-	.tt-dataset-shop-ta {
-		padding-top:5px;
-		padding-bottom:5px;  
-		background-color: white;
-	}
-	 
-	.ta-img {
+		padding: 10px 10px;
+		}
+
+		.react-autosuggest__suggestion--highlighted {
+		background-color: #ddd;
+		}
+
+		.suggestItemWrapper {
+		margin: auto;
+		clear: both;
+		}
+
+		.suggestImage {
 		float: left;
-		width: 60px;
-		max-height: 60px;
-		vertical-align:middle;
-		padding:0px;
-		cursor: pointer;
-	}
-		
-	.ta-img img {
-		width: 60px;
-		padding:0px;
-		max-height: 60px;
-		max-width: 100%;
-	}
-		
-	.ta-txt {
-		width: 100%;
-		vertical-align: middle;
-		padding:5px;
-	}
-		
-	.ta-txt i {
-		font-weight:50;
-	}
-		
-	.clear:after {
-			clear: both;
-			display: table;
-			content: "";
-	}
-		
-	
-	 
-	.fs-modal {
-			display: none; /* Hidden by default */
-			position: fixed; /* Stay in place */
-			z-index: 1; /* Sit on top */
-			left: 0;
-			top: 0;
-			width: 100%; /* Full width */
-			height: 100%; /* Full height */
-			overflow: auto; /* Enable scroll if needed */
-			background-color: rgb(0,0,0); /* Fallback color */
-			background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-	}
-	
-	.fs-centered {
-		position: fixed;
-		z-index: 2; /* Sit on top */
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		width: 400px;
-		height: 100%;
-		padding-top: 50px;
-		max-height: 100%;
-		overflow-y: auto;
-	}
-		
-	.fs-closeForm {
-		font-size: large;
-		color:white;
-	}
-		
-	</style>
-	
-	<div id="fs-searchForm" class="fs-modal">
-		<div class="fs-centered" >
-			<input class="typeahead" style="width:400px;background-color:#EBF5FB;font-size:18px;color: #17202A;" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'layout.search_bar.placeholder' | t }}">
-			<br/>
-			<a href="#" class="fs-closeForm">Close</a>
-		</div>
-	</div>
-	
-	<!-- /FastSeer -->
-	
+		width: 18%%;
+		}
+
+		.suggestImage img {
+		max-width: 40px;
+		}
+
+		.suggestName {
+		margin-left: 22%%;
+		font-size: 0.8pc;
+		color: #000000;
+		}
+
+
+		</style>
+
+		<script type="text/javascript">
+			var appDomain="%s";
+			var shop="%s";
+			var placeholder="What are you looking for?";
+		</script>
+		<div id="fs-type-ahead"></div>
+		<script type="text/javascript" src="https://static.fastseer.com/static/js/main.c361c465.js"></script>
+		<!-- / END FS SEARCH -->
 	`
 	payload := ShopifyAssetPutPayload{}
 	payload.Asset.Key = "snippets/fs-search-form.liquid"
-	payload.Asset.Value = html
+	payload.Asset.Value = fmt.Sprintf(html, appDomain, shop.Shop)
 
 	b, err := json.Marshal(payload)
 	if err != nil {

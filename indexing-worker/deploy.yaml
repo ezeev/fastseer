@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: fs-index-worker
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: fs-index-worker
+    spec:
+      containers:
+      - name: fs-index-worker
+        image: ezeev/fastseer:indexworker-v3
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8083
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "100m"
+          limits:
+            memory: "64Mi"
+            cpu: "100m"
+      imagePullSecrets:
+        - name: fastseer-docker-repo-key            

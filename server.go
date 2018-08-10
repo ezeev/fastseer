@@ -3,6 +3,7 @@ package fastseer
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -118,6 +119,9 @@ func (s *Server) ServerReady() bool {
 }
 func (s *Server) handlePing() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		log.Println(r.Host)
+
 		fmt.Fprint(w, "pong")
 	}
 }

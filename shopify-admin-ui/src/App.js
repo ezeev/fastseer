@@ -9,6 +9,7 @@ import {
 import IndexingOps from './IndexingOps'
 import SearchConfigGrid from './SearchConfigGrid';
 import ReinstallThemeAssets from './ReinstallThemeAssets';
+import RulesGrid from './rules/RulesGrid';
 
 
 class App extends Component {
@@ -82,7 +83,9 @@ class App extends Component {
           <SearchConfigGrid appDomain={this.state.appDomain} shop={this.state.shop} locale={this.state.locale} timestamp={this.state.timestamp} hmac={this.state.hmac}></SearchConfigGrid>
         </Layout>
     } if (this.state.selected === 2) {
-      alert("TODO: Search rules!")
+      content = <Layout>
+          <RulesGrid appDomain={this.state.appDomain} shop={this.state.shop}></RulesGrid>
+        </Layout>
     }
 
 
