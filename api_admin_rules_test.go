@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/ezeev/fastseer/rules"
+	"github.com/google/uuid"
 )
 
 func TestRulesCRUD(t *testing.T) {
@@ -22,11 +23,15 @@ func TestRulesCRUD(t *testing.T) {
 	rule.MatchQueryTriggersSs = []string{"test"}
 	rule.ActReplaceQueryS = "i was the replacement"
 
-	url := "http://localhost:8082" + apiV1HandlePostRules + "?" + testAuthParams
+	url := "http://localhost:8082" + apiV1HandlePutRules + "?" + testAuthParams
 
 	rulesList := []rules.SearchRule{rule}
 	b, _ := json.Marshal(rulesList)
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(b))
+
+	req, _ := http.NewRequest("PUT", url, bytes.NewBuffer(b))
+	hCli := http.Client{}
+	resp, err := hCli.Do(req)
+	//resp, err := http.Put(url, "application/json", bytes.NewBuffer(b))
 	if err != nil {
 		t.Error(err)
 	}
@@ -56,7 +61,7 @@ func TestRulesCRUD(t *testing.T) {
 
 	//delete
 	delurl := url + "&id=test01"
-	req, _ := http.NewRequest("DELETE", delurl, nil)
+	req, _ = http.NewRequest("DELETE", delurl, nil)
 	cli := http.Client{}
 	resp, err = cli.Do(req)
 	if err != nil {
@@ -69,5 +74,12 @@ func TestRulesCRUD(t *testing.T) {
 	resp.Body.Close()
 
 	server.Shutdown()
+
+}
+
+func TestUUID(t *testing.T) {
+
+	uuid := uuid.Must(uuid.NewRandom()).String()
+	t.Log(uuid)
 
 }

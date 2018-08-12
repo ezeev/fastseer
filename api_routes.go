@@ -11,7 +11,7 @@ const apiV1HanldGetShopConf = "/api/v1/shop/config"
 const apiV1HandlePostShopConf = "/api/v1/shop/config"
 const apiV1HandleCloneSearchConf = "/api/v1/shop/search/config/clone"
 const apiV1HandleReinstallThemeAssets = "/api/v1/shop/theme/install"
-const apiV1HandlePostRules = "/api/v1/shop/rules"
+const apiV1HandlePutRules = "/api/v1/shop/rules"
 const apiV1HandleDeleteRules = "/api/v1/shop/rules"
 const apiV1HandleGetRules = "/api/v1/shop/rules"
 
@@ -32,8 +32,8 @@ func (s *Server) ApiRoutes() {
 	s.Router.HandleFunc(apiV1HandlePostShopConf, s.handleCORS(s.authorizeShopifyHandler(s.apiHandlePostShopConfig()))).Methods("POST", "OPTIONS")
 	s.Router.HandleFunc(apiV1HandleCloneSearchConf, s.handleCORS(s.authorizeShopifyHandler(s.apiHandleCloneSearchConfig()))).Methods("POST")
 	s.Router.HandleFunc(apiV1HandleReinstallThemeAssets, s.handleCORS(s.authorizeShopifyHandler(s.apiHandleReinstallThemeAssets()))).Methods("POST")
-	s.Router.HandleFunc(apiV1HandlePostRules, s.handleCORS(s.authorizeShopifyHandler(s.apiHandlePostRules()))).Methods("POST")
-	s.Router.HandleFunc(apiV1HandlePostRules, s.handleCORS(s.authorizeShopifyHandler(s.apiHandleDeleteRule()))).Methods("DELETE")
+	s.Router.HandleFunc(apiV1HandlePutRules, s.handleCORS(s.authorizeShopifyHandler(s.apiHandlePutRules()))).Methods("PUT", "OPTIONS")
+	s.Router.HandleFunc(apiV1HandleDeleteRules, s.handleCORS(s.authorizeShopifyHandler(s.apiHandleDeleteRule()))).Methods("DELETE")
 	s.Router.HandleFunc(apiV1HandleGetRules, s.handleCORS(s.authorizeShopifyHandler(s.apiHandleGetRules()))).Methods("GET")
 	//apiHandleGetRules()
 

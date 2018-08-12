@@ -84,7 +84,7 @@ class App extends Component {
         </Layout>
     } if (this.state.selected === 2) {
       content = <Layout>
-          <RulesGrid appDomain={this.state.appDomain} shop={this.state.shop}></RulesGrid>
+          <RulesGrid appDomain={this.state.appDomain} shop={this.state.shop} locale={this.state.locale} timestamp={this.state.timestamp} hmac={this.state.hmac}></RulesGrid>
         </Layout>
     }
 

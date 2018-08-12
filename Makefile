@@ -1,4 +1,4 @@
-VERSION=v9
+VERSION=v10
 
 clean:
 	rm -f fastseer

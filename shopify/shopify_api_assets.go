@@ -32,7 +32,8 @@ func PutSearchFormThemeAsset(shop *ShopifyClientConfig, themeID int, appDomain s
 		<!-- FAST SEER SEARCH FORM -->
 		<style>
 		.react-autosuggest__container {
-		position: relative;
+          all: initial;
+		 position: relative;
 		}
 
 		.react-autosuggest__input {
@@ -67,7 +68,7 @@ func PutSearchFormThemeAsset(shop *ShopifyClientConfig, themeID int, appDomain s
 		.react-autosuggest__suggestions-container--open {
 		display: block;
 		position: absolute;
-		top: 50px;
+		top: 24px;
 		width: 280px;
 		border: 1px solid #aaa;
 		background-color: #fff;
@@ -113,8 +114,6 @@ func PutSearchFormThemeAsset(shop *ShopifyClientConfig, themeID int, appDomain s
 		font-size: 0.8pc;
 		color: #000000;
 		}
-
-
 		</style>
 
 		<script type="text/javascript">

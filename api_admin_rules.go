@@ -9,13 +9,14 @@ import (
 	"net/http"
 
 	"github.com/ezeev/solrg"
+	"github.com/google/uuid"
 
 	"github.com/ezeev/fastseer/logger"
 	"github.com/ezeev/fastseer/rules"
 	"github.com/ezeev/fastseer/shopify"
 )
 
-func (s *Server) apiHandlePostRules() http.HandlerFunc {
+func (s *Server) apiHandlePutRules() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		params := r.URL.Query()
@@ -30,6 +31,13 @@ func (s *Server) apiHandlePostRules() http.HandlerFunc {
 			logger.Error(shop, err.Error())
 			SendErrorResponse(w, r, err.Error(), err)
 			return
+		}
+
+		//does it have an ID?
+		for _, v := range rules {
+			if v.ID == "" {
+				v.ID = uuid.Must(uuid.NewRandom()).String()
+			}
 		}
 
 		err = s.Search.IndexStruct(shop+"_rules", shopClient.IndexAddress, rules)
