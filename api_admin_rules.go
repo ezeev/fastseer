@@ -33,10 +33,10 @@ func (s *Server) apiHandlePutRules() http.HandlerFunc {
 			return
 		}
 
-		//does it have an ID?
-		for _, v := range rules {
+		//does it have an ID? if not, create one
+		for i, v := range rules {
 			if v.ID == "" {
-				v.ID = uuid.Must(uuid.NewRandom()).String()
+				rules[i].ID = uuid.Must(uuid.NewRandom()).String()
 			}
 		}
 

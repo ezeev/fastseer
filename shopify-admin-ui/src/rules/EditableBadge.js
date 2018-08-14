@@ -1,13 +1,6 @@
 import React from 'react';
 import {
-  TextContainer,
-  Layout,
-  Card,
-  Stack,
   Badge,
-  Caption,
-  Heading,
-  Subheading,
   Icon,
   TextField,
   Link,
@@ -21,6 +14,8 @@ class EditableBadge extends React.Component {
         this.state = {
             editMode: false,
             value: '',
+            tempValue: null,
+            deleted: false,
         }
     }
 
@@ -46,23 +41,49 @@ class EditableBadge extends React.Component {
         this.props.valueChange(this.props.field, this.props.index, this.state.value)
     }
 
+    handleDelete = () => {
+        this.setState({
+            value: '',
+        });
+        //this.props.valueChange(this.props.field, this.props.index, this.state.value)*/
+        this.props.onDelete(this.props.field, this.props.index)
+    }
+
     handleOnChange = (item) => {
         this.setState({
             value: item,
         })
     }
 
-    render() {
+    handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            // exit the text box
+            // same as blur
+            this.handleBlur();
+        }
+     }
 
+    render() {
         let content;
+        if (this.state.deleted) {
+            return (<span></span>);
+        }
+
         if (this.state.editMode) {
-            content = <TextField 
-                        autoFocus
-                        onChange={this.handleOnChange}
-                        value={this.state.value}
-                        onBlur={this.handleBlur}></TextField>
+            content = <div onKeyDown={this.handleKeyPress}>
+                        <TextField 
+                            tabIndex="0"
+                            autoFocus
+                            onChange={this.handleOnChange}
+                            value={this.state.value}
+                            onBlur={this.handleBlur}
+                            ></TextField></div>
         } else {
-            content = <Link onClick={this.handleBadgeClick}><Badge>{this.state.value}</Badge></Link>
+            if (this.state.value.length <= 0) {
+                content = <Link onClick={this.handleBadgeClick}>set</Link>
+            } else {
+                content = <Badge><Link onClick={this.handleBadgeClick}>{this.state.value}</Link><Link onClick={this.handleDelete}><Icon source="cancel" color="skyDark" style={{height:"1rem", maxHeight:"1rem"}} /></Link></Badge>
+            }
         }
         return (
             <span>
