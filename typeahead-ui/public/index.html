@@ -25,6 +25,17 @@
       var appDomain = "https://d3b7936c.ngrok.io";
       var shop = "fastseer-staging.myshopify.com";
       var placeholder = "What are you looking for?"
+
+
+      function fsOpen(h){
+        var url = location.href;               
+        location.href = "#"+h;
+        console.log("going to: " + location.href);
+      }
+
+
+
+
     </script>
 
   </head>
@@ -34,7 +45,9 @@
     </noscript>
     <div>
       <div>Content above</div>
+      <a href="#" onclick="fsOpen('/search');return false;">Open</a>
       <div id="fs-type-ahead"></div>
+      <div id="fs-results"></div>
       <div>Content below</div>
     </div>
 

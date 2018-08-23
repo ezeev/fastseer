@@ -88,11 +88,16 @@ class RulesItem extends React.Component {
         this.setState({
             rule: newRule,
             changed: true,
+            errorMsg: null,
         })
     }
 
 
     handleSaveRule = () => {
+        if (this.state.rule.name_s.length <= 0) {
+            this.setState({errorMsg: 'You must enter a name before saving the rule.'})
+            return;
+        }
         fetch(this.props.appDomain + "/api/v1/shop/rules?" + window.authQueryString(this.props), {
             method: 'PUT', // or 'PUT'
             body: JSON.stringify([this.state.rule]), // data can be `string` or {object}!
@@ -103,9 +108,9 @@ class RulesItem extends React.Component {
             .then(res => res.json())
             .then((result) => {
                 if (result.message) {
-                    this.setState({successMsg: "Saved rule"});
+                    this.setState({successMsg: "Saved rule", errorMsg: null,});
                 } else if (result.error) {
-                    this.setState({errorMsg: result.error});
+                    this.setState({errorMsg: result.error, successMsg: null,});
                 }
                 this.setState({changed: false})
             })
@@ -177,6 +182,13 @@ class RulesItem extends React.Component {
             </Banner>
         }
 
+        let errorBanner;
+        if (this.state.errorMsg) {
+            errorBanner = <Banner status="critical" onDismiss={() => {this.setState({errorMsg: null})}}>
+            <p>{this.state.errorMsg}</p>
+        </Banner>
+        }
+
         let nameField = <EditableBadge value={this.props.rule.name_s} field="name_s" valueChange={this.handleNameChange} onDelete={this.handleDeleteItem}>                        
         </EditableBadge>
 
@@ -190,13 +202,13 @@ class RulesItem extends React.Component {
         }
 
         return (
-            <div>
-                <Card sectioned title={"Rule:" + this.props.rule.name_s}
+                <Card title={this.props.rule.name_s}
                     primaryFooterAction={{content:"Save", onAction: this.handleSaveRule}}
                     secondaryFooterAction={deleteAction}
                 >                
                     {changeBanner}
-                    {successBanner}
+                    {successBanner}     
+                    {errorBanner}           
                     <div style={{position:"relative", float:"left", width:"50%", padding:"15px"}}>
                         <Subheading>Name & Tags:</Subheading>   
                         name:&nbsp;
@@ -217,8 +229,7 @@ class RulesItem extends React.Component {
                         <Caption>Add Boost</Caption> {actAddBqs} <Link onClick={this.handleAddItem.bind(this, "actAddBqs_ss", "boost")}>add</Link>  <br />
                         <Caption>Add Facet</Caption> {actAddFacetFields} <Link onClick={this.handleAddItem.bind(this, "actAddFacetFields_ss", "facet")}>add</Link> 
                     </div>
-                    </Card>
-                </div>
+                </Card>
         );
     }
 }

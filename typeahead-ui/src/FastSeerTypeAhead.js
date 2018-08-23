@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
 import Autosuggest from 'react-autosuggest';
+import Switch from '../node_modules/react-router-dom/Switch';
+import Route from '../node_modules/react-router-dom/Route';
+import withRouter from '../node_modules/react-router/Router'
+import FastSeerTypeAheadApp from './App';
+import { Link } from '../node_modules/react-router-dom';
+import close from './close.svg'
 
 // When suggestion is clicked, Autosuggest needs to populate the input
 // based on the clicked suggestion. Teach Autosuggest how to calculate the
@@ -15,13 +21,23 @@ const renderSuggestion = suggestion => (
 );
 
 class FastSeerTypeAhead extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     // Autosuggest is a controlled component.
     // This means that you need to provide an input value
     // and an onChange handler that updates this value (see below).
     // Suggestions also need to be provided to the Autosuggest,
     // and they are initially empty because the Autosuggest is closed.
+    this.state = {
+      value: '',
+      suggestions: []
+    };
+  }
+
+  componentDidMount() {
+  }
+
+  componentWillUnmount() {
     this.state = {
       value: '',
       suggestions: []
@@ -67,6 +83,22 @@ class FastSeerTypeAhead extends React.Component {
     });
   };
 
+  onSuggestionSelected = () => {
+    window.fsOpen('/results?q=' + this.state.value);
+  }
+
+  onEnterPress = (e) => {
+    if (e.key === 'Enter') {
+        // exit the text box
+        // same as blur
+        window.fsOpen('/results?q=' + this.state.value);
+    }
+ }
+
+  onFocusLost = () => {
+    window.fsOpen('/')
+  }
+
   render() {
     const { value, suggestions } = this.state;
 
@@ -74,23 +106,37 @@ class FastSeerTypeAhead extends React.Component {
     const inputProps = {
       placeholder: window.placeholder,
       value,
-      onChange: this.onChange
+      type: 'search',
+      onChange: this.onChange,
+      onBlur: this.onFocusLost,
+      id: 'fsInput', 
+      onKeyDown: this.onEnterPress,
     };
 
-
-    // Finally, render it!
     return (
-      <Autosuggest
-        suggestions={suggestions}
-        onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-        onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-        getSuggestionValue={getSuggestionValue}
-        renderSuggestion={renderSuggestion}
-        inputProps={inputProps}
-
-      />
+      <div className="fa-modal">
+        <div className="fa-search">
+          <Autosuggest
+            suggestions={suggestions}
+            onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+            onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+            onSuggestionSelected={this.onSuggestionSelected}
+            getSuggestionValue={getSuggestionValue}
+            renderSuggestion={renderSuggestion}
+            inputProps={inputProps}
+            ref={ () => { document.getElementById('fsInput').focus(); } } 
+          />
+        </div>
+        <div className="fa-close">
+          <Link to="/">
+          <img height="37" width="32" src="https://static.fastseer.com/static/media/close.6f9bd8cd.svg"/>
+          </Link>
+        </div>
+      </div>
     );
   }
 }
 
-export default FastSeerTypeAhead
+
+
+export default FastSeerTypeAhead;

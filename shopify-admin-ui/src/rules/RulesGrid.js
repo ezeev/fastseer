@@ -101,7 +101,7 @@ class RulesGrid extends React.Component {
     }
     
     getRules() {
-        this.setState({loading: true});
+        this.setState({loading: true, rules: []});
         fetch(this.props.appDomain + "/api/v1/shop/rules?" + window.authQueryString(this.props) + "&q=*")
         .then(res => res.json())
         .then(
@@ -121,6 +121,7 @@ class RulesGrid extends React.Component {
     }
 
     handleDeleteItem = (id) => {
+        console.log("deleting "+ id);
        fetch(this.props.appDomain + "/api/v1/shop/rules?id=" + id + "&" + window.authQueryString(this.props), {
             method: 'DELETE', // or 'PUT'
             headers:{
@@ -171,22 +172,18 @@ class RulesGrid extends React.Component {
                 >
                 {loading}
                 <Card sectioned title="Rules" 
-                    primaryFooterAction={{
+                    actions={[{
                         content: 'New Rule',
                         onAction: this.handleNewRule,
-                    }}>
-                    Use the options below to manage your rules.                            
-                    </Card>
-                    {successBanner}    
-                    <Card>
-                    
+                    }]}>                                               
+                    {successBanner}
                     {ruleItems}
-                    </Card>
-
+                    </Card>                                                        
                     <Modal
                         open={this.state.showNewRuleModal}
                         onClose={this.handleCloseModal}
-                        title="Import customers by CSV"
+                        title="Create a New Search Rule"
+                        height={200}
                         /*primaryAction={{
                         content: 'Import customers',
                         onAction: this.handleChange,

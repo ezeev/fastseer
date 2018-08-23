@@ -40,4 +40,5 @@ func (s *Server) ApiRoutes() {
 	// public api
 	s.Router.HandleFunc(apiSearchTypeAhead, s.handleCORS(s.handleTypeAheadRequest()))
 	s.Router.HandleFunc(apiSearchTypeAheadTopSearches, s.handleCORS(s.handleTypeAheadTopSearches()))
+
 }

@@ -1,23 +1,35 @@
 import React, { Component } from 'react';
 import FastSeerTypeAhead from './FastSeerTypeAhead'
-//import './App.css';
+import {
+  BrowserRouter as Router,
+  Route,
+  Link
+} from 'react-router-dom'
+import Switch from '../node_modules/react-router-dom/Switch';
 
 class FastSeerTypeAheadApp extends Component {
 
   constructor(props) {
     super(props);
-    /*var urlParams = new URLSearchParams(window.location.search);
     this.state = {
-        shop: urlParams.get("shop"),
-        appDomain: urlParams.get("appDomain"),
-    }*/
+        openModal: false,
+    }
   }
 
+  componentDidMount() {
+
+  }
+
+  componentWillMount() {
+  }
 
   render() {
     return (
       <div className="App">
-        <FastSeerTypeAhead appDomain={window.appDomain} shop={window.shop}></FastSeerTypeAhead>
+        <Switch>
+          <Route path="/search" render={()=><FastSeerTypeAhead appDomain={window.appDomain} shop={window.shop}/>}/>
+          <Route path="/" render={()=><Link to="/search">Open Search</Link>}></Route>
+        </Switch>
       </div>
 
     );

@@ -1,10 +1,3 @@
-// @APIVersion 1.0.0
-// @APITitle Teamwork Desk
-// @APIDescription Bend Teamwork Desk to your will using these read and write endpoints
-// @Contact support@teamwork.com
-// @TermsOfServiceUrl https://www.teamwork.com/termsofservice
-// @License BSD
-// @LicenseUrl http://opensource.org/licenses/BSD-2-Clause
 package main
 
 import (
@@ -15,6 +8,11 @@ import (
 	"github.com/ezeev/fastseer/logger"
 )
 
+// @APIVersion 1.0.0
+// @APITitle FastSeer Admin API
+// @APIDescription My API usually works as expected.
+// @Contact developer@fastseer.com
+// @BasePath https://shopify-app.fastseer.com/api/
 func main() {
 
 	conf := os.Args[1]

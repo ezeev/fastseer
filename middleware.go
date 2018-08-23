@@ -22,7 +22,8 @@ func init() {
 
 func (s *Server) handleCORS(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Methods", "*")
+		//Access-Control-Allow-Methods
+		w.Header().Set("Access-Control-Allow-Methods", "PUT,GET,POST,DELETE")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, X-Auth-Token, content-type, Accept")
 		w.Header().Set("Content-Type", "application/json")

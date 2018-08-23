@@ -8,6 +8,21 @@ import (
 	"github.com/ezeev/fastseer/shopify"
 )
 
+///api/v1/shop/theme/install
+
+/**
+ * @api {post} /shop/theme/install Reinstall theme assets into the current shopify theme
+ * @apiName PostThemeAssets
+ * @apiGroup Theme
+ *
+ * @apiParam {String} shopify The shopify store i.e. fastseer.myshopify.com
+ * @apiParam {String} hmac Secure hmac param from Shopify admin.
+ * @apiParam {String} locale Locale from the Shopify admin.
+ * @apiParam {Number} timestamp Timestamp from the Shopify admin.
+ *
+ * @apiSuccess {Object} MessageResponse See <code>MessageResponse</code> type.
+ * @apiError {Object} ErrorResponse See <code>ErrorResponse</code> type.
+ */
 func (s *Server) apiHandleReinstallThemeAssets() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

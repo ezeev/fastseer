@@ -74,7 +74,11 @@ func (s *Server) handleShopifyCallback() http.HandlerFunc {
 		// create the search collections for this customer
 		// In the future, we may allocate different customers to different Solr clusters
 		// once a cluster reaches full capacity
-		go shopify.CreateClientCollections(s.Search, client.IndexAddress, shop)
+		logger.Info(shop, "Creating client collections")
+		err = shopify.CreateClientCollections(s.Search, client.IndexAddress, shop)
+		if err != nil {
+			logger.Error(shop, "Error while creating collections: "+err.Error())
+		}
 
 		// redirect back to shopify admin
 		redir := fmt.Sprintf("https://%s/admin/apps/%s", shop, apiKey)

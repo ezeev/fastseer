@@ -1,4 +1,4 @@
-VERSION=v3
+VERSION=v4
 
 build:
 	@docker build -t ezeev/fastseer:proxy-$(VERSION) -f Dockerfile .

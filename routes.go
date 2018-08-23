@@ -19,7 +19,6 @@ func (s *Server) Routes() {
 	// need to pass it through server.authortizeShopifyHandler()!!!! - this will perform HMAC auth using
 	// the params passed to the handler. Use the NewHmacAuthFromParams struct to simplify. See /shopify for
 	// examples
-
 	s.Router = mux.NewRouter()
 	s.Router.HandleFunc(routePing, s.handlePing())
 	s.Router.HandleFunc(routeShopifyCallBack, s.handleShopifyCallback())

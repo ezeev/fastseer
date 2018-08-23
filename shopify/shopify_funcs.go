@@ -35,24 +35,37 @@ func httpClient(token string, shop string, method string, endPoint string, payLo
 	return netClient, req
 }
 
-func CreateClientCollections(searchEngine search.SearchEngine, searchAddr string, shop string) {
+func CreateClientCollections(searchEngine search.SearchEngine, searchAddr string, shop string) error {
 	collectionOpts := map[string]string{"numShards": "1", "replicationFactor": "1"}
 
-	searchEngine.CreateIndex(shop, searchAddr, collectionOpts)
+	err := searchEngine.CreateIndex(shop, searchAddr, collectionOpts)
+	if err != nil {
+		return err
+	}
 
-	time.Sleep(time.Second * 3)
+	time.Sleep(time.Millisecond * 500)
 
-	searchEngine.CreateIndex(shop+"_analytics", searchAddr, collectionOpts)
+	err = searchEngine.CreateIndex(shop+"_analytics", searchAddr, collectionOpts)
+	if err != nil {
+		return err
+	}
 
-	time.Sleep(time.Second * 3)
+	time.Sleep(time.Millisecond * 500)
 
-	searchEngine.CreateIndex(shop+"_typeahead", searchAddr, collectionOpts)
+	err = searchEngine.CreateIndex(shop+"_typeahead", searchAddr, collectionOpts)
+	if err != nil {
+		return err
+	}
 
-	time.Sleep(time.Second * 3)
+	time.Sleep(time.Millisecond * 500)
 
-	searchEngine.CreateIndex(shop+"_rules", searchAddr, collectionOpts)
+	err = searchEngine.CreateIndex(shop+"_rules", searchAddr, collectionOpts)
+	if err != nil {
+		return err
+	}
 
-	time.Sleep(time.Second * 3)
+	return nil
+
 }
 
 func AuthenticateShopifyRequest(params url.Values, secretKey string) bool {
