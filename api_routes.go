@@ -18,6 +18,7 @@ const apiV1HandleGetRules = "/api/v1/shop/rules"
 //public api
 const apiSearchTypeAhead = "/search/typeahead"
 const apiSearchTypeAheadTopSearches = "/search/typeahead/topsearches"
+const apiSearch = "/api/v1/search"
 
 func (s *Server) ApiRoutes() {
 
@@ -40,5 +41,6 @@ func (s *Server) ApiRoutes() {
 	// public api
 	s.Router.HandleFunc(apiSearchTypeAhead, s.handleCORS(s.handleTypeAheadRequest()))
 	s.Router.HandleFunc(apiSearchTypeAheadTopSearches, s.handleCORS(s.handleTypeAheadTopSearches()))
+	s.Router.HandleFunc(apiSearch, s.handleCORS(s.handleApiSearch()))
 
 }

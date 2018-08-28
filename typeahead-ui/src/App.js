@@ -11,9 +11,9 @@ class FastSeerTypeAheadApp extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
+    /*this.state = {
         openModal: false,
-    }
+    }*/
   }
 
   componentDidMount() {

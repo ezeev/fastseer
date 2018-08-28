@@ -10,6 +10,7 @@
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/semantic.css" integrity="sha256-1dcYWPAIBzLgOJlRNpMFWi1aIEWZU490to6kkbDmFM8=" crossorigin="anonymous" />
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -24,7 +25,12 @@
     <script type="text/javascript">
       var appDomain = "https://d3b7936c.ngrok.io";
       var shop = "fastseer-staging.myshopify.com";
-      var placeholder = "What are you looking for?"
+      //var placeholder = "What are you looking for?"
+
+      var searchConfig = {
+        pageSize: 9,
+        placeHolder: "What are you looking for?",
+      };
 
 
       function fsOpen(h){
@@ -44,12 +50,11 @@
       You need to enable JavaScript to run this app.
     </noscript>
     <div>
-      <div>Content above</div>
       <a href="#" onclick="fsOpen('/search');return false;">Open</a>
       <div id="fs-type-ahead"></div>
       <div id="fs-results"></div>
-      <div>Content below</div>
     </div>
+    Content below grid
 
 
 

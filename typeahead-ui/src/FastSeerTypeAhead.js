@@ -35,13 +35,10 @@ class FastSeerTypeAhead extends React.Component {
   }
 
   componentDidMount() {
+    this.mounted = true;
   }
-
   componentWillUnmount() {
-    this.state = {
-      value: '',
-      suggestions: []
-    };
+    this.mounted = false;
   }
 
   onChange = (event, { newValue }) => {
@@ -52,7 +49,7 @@ class FastSeerTypeAhead extends React.Component {
 
   // Autosuggest will call this function every time you need to update suggestions.
   // You already implemented this logic above, so just use it.
-  onSuggestionsFetchRequested = ({ value }) => {
+  onSuggestionsFetchRequested = ({ value }) => {  
     if (value.length < 2) {
       this.setState({
         suggestions: [],
@@ -63,9 +60,11 @@ class FastSeerTypeAhead extends React.Component {
       .then(res => res.json())
       .then(
           (result) => {
-            this.setState({
-              suggestions: result,
-            });
+            if (this.mounted) {
+              this.setState({
+                suggestions: result,
+              });
+            }
           },
       )
       .catch(error => {
@@ -73,7 +72,7 @@ class FastSeerTypeAhead extends React.Component {
           suggestions: [],
         });
         console.error(error)
-      });
+      });    
   };
 
   // Autosuggest will call this function every time you need to clear suggestions.
@@ -84,6 +83,8 @@ class FastSeerTypeAhead extends React.Component {
   };
 
   onSuggestionSelected = () => {
+    console.log(this.timer);
+    clearTimeout(this.timer);
     window.fsOpen('/results?q=' + this.state.value);
   }
 
@@ -91,6 +92,7 @@ class FastSeerTypeAhead extends React.Component {
     if (e.key === 'Enter') {
         // exit the text box
         // same as blur
+        clearTimeout(this.timer)
         window.fsOpen('/results?q=' + this.state.value);
     }
  }
@@ -104,7 +106,7 @@ class FastSeerTypeAhead extends React.Component {
 
     // Autosuggest will pass through all these props to the input.
     const inputProps = {
-      placeholder: window.placeholder,
+      placeholder: window.searchConfig.placeHolder,
       value,
       type: 'search',
       onChange: this.onChange,

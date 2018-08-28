@@ -2,10 +2,10 @@ package fastseer
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strings"
 
+	"github.com/ezeev/fastseer/logger"
 	"github.com/ezeev/solrg"
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -70,7 +70,7 @@ func (s *Server) handleTypeAheadRequest() http.HandlerFunc {
 		//resp, err := s.Search.Query(shop+"_typeahead", "172.104.9.135:8983/solr", solrParams)
 		resp, err := s.Search.Query(shop+"_typeahead", shopConfig.IndexAddress, solrParams)
 		if err != nil {
-			log.Println("Error: " + err.Error())
+			logger.Error(shop, err.Error())
 		}
 
 		solrResp := resp.(*solrg.SolrSearchResponse)

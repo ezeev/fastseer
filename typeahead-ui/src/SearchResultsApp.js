@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import {
   BrowserRouter as Router,
   Route,
-  Link
+  Link,
+  browserHistory,
+  withRouter,
 } from 'react-router-dom'
 import Switch from '../node_modules/react-router-dom/Switch';
 import SearchResults from './SearchResults';
@@ -24,7 +26,7 @@ class SearchResultsApp extends Component {
   render() {
     return (
       <div className="SearchResultsApp">
-        <Switch>
+        <Switch >
           <Route path="/results" render={()=><SearchResults appDomain={window.appDomain} shop={window.shop}/>}/>
           <Route path="/" render={()=><span></span>}></Route>
         </Switch>
@@ -33,4 +35,4 @@ class SearchResultsApp extends Component {
   }
 }
 
-export default SearchResultsApp;
+export default withRouter(SearchResultsApp);
